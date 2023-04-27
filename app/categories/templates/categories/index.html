@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block meta_title %} Список категорий {% endblock %}
+
+{% block content %}
+
+    {% if categories %}
+        {% for category in categories %}
+            <p>{{ category.name }}</p>
+			<br>
+        {% endfor %}
+    {% else %}
+        <p>Нет записей о категориях.</p>
+    {% endif %}
+	
+{% endblock %}

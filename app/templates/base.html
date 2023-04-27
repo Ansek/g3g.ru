@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <title>{% block meta_title %}{% endblock %}</title>
+</head>
+<body>
+	<a href="{{ url_for('general.index') }}">Главная страница<a/>
+	<a href="{{ url_for('basket.index') }}">Корзина<a/>
+	<a href="{{ url_for('sections.index') }}">Разделы<a/>
+	<a href="{{ url_for('categories.index') }}">Категории<a/>
+	<a href="{{ url_for('products.index') }}">Товары<a/>
+	<h1>Заголовок</h1>
+	{% block content %}
+	{% endblock %}
+<body>
+</html>
