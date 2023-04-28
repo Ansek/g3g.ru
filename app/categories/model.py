@@ -1,6 +1,12 @@
 from app.database import db
+from dataclasses import dataclass
 
+@dataclass
 class Category(db.Model):
+    id: int
+    name: str
+    section_id: int
+    
     __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)

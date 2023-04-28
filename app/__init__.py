@@ -1,7 +1,8 @@
 import os
-from flask import Flask
+from flask import Flask, Blueprint
 
 from .database import db
+
 
 def create_app():
     app = Flask(__name__)
@@ -29,5 +30,11 @@ def create_app():
     app.register_blueprint(products.module)
     app.register_blueprint(sections.module)
     app.register_blueprint(general.module)
+    
+    api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
+    api_v1.register_blueprint(categories.api_v1.bp)
+    api_v1.register_blueprint(products.api_v1.bp)
+    api_v1.register_blueprint(sections.api_v1.bp)
+    app.register_blueprint(api_v1)
     
     return app

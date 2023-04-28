@@ -6,10 +6,13 @@ from flask import (
     current_app
 )
 from sqlalchemy.exc import SQLAlchemyError
+
 from .model import Category, db
+from app.api_v1 import API_V1
 
 module = Blueprint('categories', __name__,
     template_folder='templates', url_prefix='/categories')
+
 
 def log_error(e, cond):
     msg = f'Error while querying the database ({cond})'
@@ -26,3 +29,6 @@ def index():
         log_error(e, 'in category.all')
         abort(500)
     return render_template('categories/index.html', categories=categories)
+
+ 
+api_v1 = API_V1('categories', Category)

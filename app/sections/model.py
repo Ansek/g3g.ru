@@ -1,6 +1,11 @@
 from app.database import db
+from dataclasses import dataclass
 
+@dataclass
 class Section(db.Model):
+    id: int
+    name: str
+
     __tablename__ = 'section'
 
     id = db.Column(db.Integer, primary_key=True)

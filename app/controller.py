@@ -5,9 +5,11 @@ from flask import (
 
 module = Blueprint('general', __name__)
 
+
 @module.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
 
 @module.app_errorhandler(404)
 def handle_404(err):

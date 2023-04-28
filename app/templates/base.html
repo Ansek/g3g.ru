@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	
+	<link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
     <title>{% block meta_title %}{% endblock %}</title>
 </head>
 <body>
+	<img src="{{ url_for('static', filename='img/logo.png') }}">
 	<a href="{{ url_for('general.index') }}">Главная страница<a/>
 	<a href="{{ url_for('basket.index') }}">Корзина<a/>
 	<a href="{{ url_for('sections.index') }}">Разделы<a/>
