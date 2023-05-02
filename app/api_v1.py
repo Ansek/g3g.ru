@@ -12,9 +12,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.database import db
 
 
-def convert_arg(arg_name, arg_type=int, str_type='int', IsNotNone=False):
+def convert_arg(arg_name, arg_type, IsNotNone=False):
     arg = request.args.get(arg_name)
     res = None
+    str_type = arg_type.__name__
     msg = f'{arg_name} should be of type {str_type}'
     if arg and arg != '':
         arg = request.args.get(arg_name, type=arg_type)
@@ -26,8 +27,17 @@ def convert_arg(arg_name, arg_type=int, str_type='int', IsNotNone=False):
         raise API_V1_ValidationException(msg)
     return res
 
+
+def check_arg_list(arg_list):
+    for key in request.args.keys():
+        if key not in arg_list:
+            msg = f'The method has no argument named `{key}`'
+            raise API_V1_ValidationException(msg)
+
+
 def log_error(msg, e):
     print(f'\n{msg}\n{e}\n')
+
 
 class API_V1:
     def __init__(self, name, dbclass):
@@ -50,6 +60,10 @@ class API_V1:
         @self.bp.route('/', methods=['POST'])
         def post(): 
             return self._post()
+            
+        @self.bp.route('/<int:id>', methods=['PUT'])
+        def put(id): 
+            return self._put(id)
 
     def _count(self):
         try:
@@ -60,12 +74,9 @@ class API_V1:
             
     def _get(self, limit, offset, total, query=None):
         code = 200
-        # Проверка соотвествия аргументам
-        for key in request.args.keys():
-            if key not in self.gets_param:
-                return jsonify({'message':
-                    f'The method has no argument named `{key}`'}), 400
         try:
+            # Проверка на соотвествие аргументам
+            check_arg_list(self.gets_param)
             # Если заданы пользовательские значения
             arg = self._convert_arg('limit', int)
             if arg:
@@ -101,17 +112,17 @@ class API_V1:
             if query is None:
                 query = self.dbclass.query
             data = query.get(id)
+            # Проверка на отсутствие данных
+            if data is None:
+                res = { 'message':
+                    f'Resource {self.tname}.id = {id} was not found in the database'}
+                code = 404
+            else:
+                res = { 'data': data }
         except SQLAlchemyError as e:
             res = { 'message':
                 f'Error while querying the database (in {self.tname}.GET)'}
             code = 500
-        # Проверка на отсутствие данных
-        if data is None:
-            res = { 'message':
-                f'Resource {self.tname}.id = {id} was not found in the database'}
-            code = 404
-        else:
-            res = { 'data': data }
         return jsonify(res), code 
         
     def _post(self):
@@ -126,7 +137,7 @@ class API_V1:
             db.session.commit()
             res = { 'data': dbclass }
         except SQLAlchemyError as e:
-            msg = f'Error while querying the database (in {self.tname}.GET)\n'
+            msg = f'Error while querying the database (in {self.tname}.POST)\n'
             res = { 'message': msg }
             log_error(msg, e)
             code = 500
@@ -135,7 +146,45 @@ class API_V1:
             res = { 'message': str(e)}
             code = 400
             db.session.rollback()
-        return jsonify(res), code    
+        return jsonify(res), code
+
+    def _put(self, id):
+        code = 200
+        # Выполнение запроса
+        try:
+            data = self.dbclass.query.get(id)
+            # Проверка на отсутствие данных
+            if data is None:
+                res = { 'message':
+                    f'Resource {self.tname}.id = {id} was not found in the database'}
+                code = 404
+            else:
+                self.dbclass.validate_args(False)
+                is_changed = False
+                # Сравнение с приведением к одному типу
+                for key in request.args:
+                    val = request.args[key]
+                    t = type(getattr(data, key))
+                    if getattr(data, key) != t(val):
+                        setattr(data, key, val)
+                        is_changed = True
+                # Если изменений не было
+                if not is_changed:
+                    return '', 304
+                # Иначе фиксируем данные
+                db.session.commit()
+                res = { 'data': data }
+        except SQLAlchemyError as e:
+            msg = f'Error while querying the database (in {self.tname}.PUT)\n'
+            res = { 'message': msg }
+            log_error(msg, e)
+            code = 500
+            db.session.rollback()
+        except API_V1_ValidationException as e:
+            res = { 'message': str(e)}
+            code = 400
+            db.session.rollback()
+        return jsonify(res), code
 
     def _convert_arg(self, *args):
         return convert_arg(*args)
