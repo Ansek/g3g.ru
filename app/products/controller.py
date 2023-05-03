@@ -40,7 +40,7 @@ class Product_API_V1(API_V1):
             'geCost', 'leCost', 'category'
         ])
 
-    def _get(self, limit, offset, total):
+    def get(self, limit, offset, total):
         query = self.dbclass.query
         
         try:
@@ -60,6 +60,6 @@ class Product_API_V1(API_V1):
             res = { 'message': str(e)}
             return jsonify(res), 400
             
-        return super()._get(limit, offset, total, query)
+        return super().get(limit, offset, total, query)
 
 api_v1 = Product_API_V1()

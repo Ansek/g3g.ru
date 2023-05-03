@@ -36,7 +36,7 @@ class Product(db.Model):
         check_arg_list(arg_list)
         
         # Проверки на тип
-        id = convert_arg('id', int, IsNotNone)
+        id = convert_arg('id', int)
         name = convert_arg('name', str, IsNotNone)
         cost = convert_arg('cost', float, IsNotNone)
         img_path = convert_arg('img_path', str, IsNotNone)
