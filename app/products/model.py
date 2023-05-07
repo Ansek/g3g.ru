@@ -13,6 +13,7 @@ class Product(db.Model):
     id: int
     name: str
     cost: float
+    count: int
     img_path: str
     category_id: int
 
@@ -21,6 +22,7 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False, unique=True)
     cost = db.Column(db.Float, nullable=False)
+    count = db.Column(db.Integer, nullable=False)
     img_path = db.Column(db.String(256), nullable=False)
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
@@ -30,7 +32,7 @@ class Product(db.Model):
         
     def validate_args(IsNotNone=True):
         # Проверка на соотвествие аргументам
-        arg_list = ['name', 'cost', 'img_path', 'category_id']
+        arg_list = ['name', 'cost', 'count', 'img_path', 'category_id']
         if IsNotNone:
             arg_list += ['id']
         check_arg_list(arg_list)
@@ -39,6 +41,7 @@ class Product(db.Model):
         id = convert_arg('id', int)
         name = convert_arg('name', str, IsNotNone)
         cost = convert_arg('cost', float, IsNotNone)
+        count = convert_arg('count', int, IsNotNone)
         img_path = convert_arg('img_path', str, IsNotNone)
         category_id = convert_arg('category_id', int, IsNotNone)
         
@@ -58,6 +61,10 @@ class Product(db.Model):
             
         if cost and cost < 0:
             msg = 'Cost must be should be a positive number'
+            raise API_V1_ValidationException(msg)
+            
+        if count and count < 0:
+            msg = 'Count must be should be a positive number'
             raise API_V1_ValidationException(msg)
         
         if img_path:        
