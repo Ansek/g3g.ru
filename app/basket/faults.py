@@ -24,4 +24,13 @@ class SoapStatusAssignmentError(Fault):
             faultstring=f'"{s1}" status must follow "{s2}" status'
         )
         
+class SoapNotEnoughProducts(Fault):
+    def __init__(self, id, name, count1, count2):
+        Fault.__init__(
+            self,
+            faultcode='NotEnoughProducts',
+            faultstring=f'Count of product #{id} ({name})'+\
+                f' less than {count1}.'+\
+                f'Total available: {count2}.'
+        ) 
  

@@ -5,7 +5,9 @@ from flask import (
 )
 from spyne import (
     Unicode,
+    UnsignedShort,
     Array,
+    Boolean,
     Application,
     ServiceBase,
     rpc 
@@ -17,11 +19,15 @@ from datetime import datetime
 from .model import (
     get_full_status,
     get_reduced_status,
-    Product,
+    Product as SOAP_Product,
+    ProductInfo,
     PhoneString,
     EmailString,
     IdInt,
     StatusEnum,
+    OrderItem,
+    OrderList,
+    OrderInfo,
     Order,
     Order_Product,
     db
@@ -29,8 +35,11 @@ from .model import (
 from .faults import  (
     SoapDBError,
     SoapOrderNotFound,
-    SoapStatusAssignmentError
+    SoapStatusAssignmentError,
+    SoapNotEnoughProducts
 )
+from app.addresses.model import Address
+from app.products.model import Product
 
 module = Blueprint('basket', __name__,
     template_folder='templates', url_prefix='/basket')
@@ -42,8 +51,8 @@ def index():
 
 
 class OrderService(ServiceBase):
-    @rpc(PhoneString, EmailString, IdInt, Array(Product),
-        _returns=Unicode)
+    @rpc(PhoneString, EmailString, IdInt, Array(SOAP_Product),
+        _returns=OrderItem)
     def CreateOrder(ctx, phone, email, address_id, products):
         with ctx.udc.context:
             try:
@@ -57,6 +66,19 @@ class OrderService(ServiceBase):
                 db.session.add(order)
                 db.session.flush()
                 for p in products:
+                    # Изменение количества товара
+                    dbp = Product.query.get(p.id)
+                    new_count = dbp.count - p.count
+                    if new_count < 0:
+                        db.session.rollback()
+                        raise SoapNotEnoughProducts(
+                            dbp.id,
+                            dbp.name,
+                            p.count,
+                            dbp.count
+                        )
+                    dbp.count = new_count
+                    # Добавление торара к заказу
                     op = Order_Product(
                         order_id = order.id,
                         product_id = p.id,
@@ -67,7 +89,8 @@ class OrderService(ServiceBase):
                 db.session.commit()
             except SQLAlchemyError as e:
                 raise SoapDBError(e)
-            return f'Order #{order.id} successfully created'
+            status = get_full_status(order.status)
+            return OrderItem(id=order.id, status=status)
         
     @rpc(IdInt, StatusEnum, _returns=Unicode)
     def ChangeOrderStatus(ctx, id, status):
@@ -93,9 +116,69 @@ class OrderService(ServiceBase):
                 db.session.commit()                                    
             except SQLAlchemyError as e:
                 raise SoapDBError(e)
-        return f'Order status #{id} successfully changed to ' +\
-            get_full_status(status)
+        return OrderItem(id=order.id, status=status)
 
+    @rpc(UnsignedShort, UnsignedShort, Boolean, _returns=OrderList)
+    def GetOrderList(ctx, limit, offset, not_completed):
+        res = []
+        with ctx.udc.context:
+            if limit is None:
+                limit = current_app.config['SOAP_LIMIT']
+            if offset is None:   
+                offset = 0
+            query = Order.query
+            if not_completed == True:
+                query = query.filter(Order.date_complete.is_(None))
+            total = query.count()
+            orders = query.limit(limit).offset(offset).all()
+            for order in orders:
+                oi = OrderItem(
+                    id=order.id,
+                    status=get_full_status(order.status)
+                )
+                res.append(oi)
+            return OrderList(
+                list=res,
+                limit=limit,
+                offset=offset,
+                total=total
+            )
+
+    @rpc(IdInt, _returns=OrderInfo)
+    def GetOrderById(ctx, id):
+        with ctx.udc.context:
+            order = Order.query.get(id)
+            if order is None:
+                raise SoapOrderNotFound(id)
+            products = []
+            for p in order.products:
+                dbp = Product.query.get(p.product_id)
+                products.append(ProductInfo(
+                        id=p.product_id,
+                        cost=p.cost,
+                        count=p.count,
+                        name=dbp.name
+                    )
+                )
+            addr = Address.query.get(order.address_id)
+            return OrderInfo(
+                id=order.id,
+                phone=order.phone,
+                email=order.email,
+                status=get_full_status(order.status),
+                receipt=order.receipt,
+                date_order=order.date_order,
+                date_assembly=order.date_assembly,
+                date_dispatch=order.date_dispatch,
+                date_receive=order.date_receive,
+                date_complete=order.date_complete,
+                address_id=order.address_id,
+                city=addr.city,
+                address=addr.address,
+                products=products
+            )
+            
+        
 
 class UserDefinedContext(object):
     def __init__(self, app):

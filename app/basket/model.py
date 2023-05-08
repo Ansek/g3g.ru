@@ -2,18 +2,60 @@ from spyne import (
     Unicode,
     Integer,
     Float,
+    DateTime,
+    Array,
     ComplexModel
 )
     
 from app.database import db
 
+NAMESPACE = 'order'
+
+
 class Product(ComplexModel):
-    __namespace__ = 'order'
+    __namespace__ = NAMESPACE
     id = Integer(nullable=False, min_occurs=1, ge=1)
     cost = Float(nullable=False, min_occurs=1, ge=0)
     count = Integer(nullable=False, min_occurs=1, ge=0)
-    
-    
+
+
+class ProductInfo(Product):
+    __nameclass__ = 'Product'
+    name = Unicode()
+
+
+class OrderItem(ComplexModel):
+    __namespace__ = NAMESPACE
+    id = Integer()
+    status = Unicode()
+
+
+class OrderList(ComplexModel):
+    __namespace__ = NAMESPACE
+    list = Array(OrderItem)
+    limit = Integer()
+    offset = Integer()
+    total = Integer()
+
+
+class OrderInfo(ComplexModel):
+    __namespace__ = NAMESPACE
+    id = Integer()
+    phone = Unicode()
+    email = Unicode()
+    status = Unicode()
+    receipt = Unicode()
+    date_order = DateTime()
+    date_assembly = DateTime()
+    date_dispatch = DateTime()
+    date_receive = DateTime()
+    date_complete = DateTime()
+    address_id = Integer()
+    city = Unicode()
+    address = Unicode()
+    products = Array(ProductInfo)
+
+
 PhoneString = Unicode(10,
         pattern='\d{10}',
         type_name='PhoneString',
@@ -21,7 +63,8 @@ PhoneString = Unicode(10,
         min_occurs=1,
         max_len=10
     )
-    
+
+
 EmailString = Unicode(256,
         pattern='[^@]+@[^@]+',
         type_name='EmailString',
@@ -30,8 +73,10 @@ EmailString = Unicode(256,
         min_len=5,
         max_len=256
     )
-    
+
+
 IdInt = Integer(nullable=False, min_occurs=1, ge=1)
+
 
 status = {
     'CR': 'Created',     # Заказ создан
@@ -46,16 +91,19 @@ l = [[k, v] for k, v in status.items()]
 enums = [a for b in l for a in b]   # Список чередует key и value
 StatusEnum = Unicode(values=enums[4:], type_name="SomeEnum")
 
+
 def get_full_status(key):
     if len(key) > 2:
         return key
     return status[key]
+
 
 def get_reduced_status(value):
     for k, v in status.items():
         if v == value:
             return k
     return value
+
 
 class Order(db.Model):
     __tablename__ = 'order'
