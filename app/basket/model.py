@@ -78,6 +78,15 @@ EmailString = Unicode(256,
 IdInt = Integer(nullable=False, min_occurs=1, ge=1)
 
 
+ReasonString = Unicode(256,
+        type_name='ReasonString',
+        nullable=False,
+        min_occurs=1,
+        min_len=1,
+        max_len=256
+    )
+
+
 status = {
     'CR': 'Created',     # Заказ создан
     'RT': 'Returned',    # Заказ возвращён
@@ -132,3 +141,16 @@ class Order_Product(db.Model):
         primary_key=True)
     cost = db.Column(db.Float(), nullable=False)
     count = db.Column(db.Integer(), nullable=False)
+
+    
+class ReturnedProduct(db.Model):
+    __tablename__ = 'returnedproduct'
+    
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'),
+        primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'),
+        primary_key=True)
+    date_return = db.Column(db.DateTime, primary_key=True)
+    cost = db.Column(db.Float(), nullable=False)
+    count = db.Column(db.Integer(), nullable=False)    
+    reason = db.Column(db.String(256), nullable=False)

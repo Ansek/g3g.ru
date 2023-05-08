@@ -23,6 +23,7 @@ from .model import (
     ProductInfo,
     PhoneString,
     EmailString,
+    ReasonString,
     IdInt,
     StatusEnum,
     OrderItem,
@@ -30,11 +31,13 @@ from .model import (
     OrderInfo,
     Order,
     Order_Product,
+    ReturnedProduct,
     db
 )
 from .faults import  (
     SoapDBError,
     SoapOrderNotFound,
+    SoapProductNotFound,
     SoapStatusAssignmentError,
     SoapNotEnoughProducts
 )
@@ -68,6 +71,9 @@ class OrderService(ServiceBase):
                 for p in products:
                     # Изменение количества товара
                     dbp = Product.query.get(p.id)
+                    if dbp is None:
+                        db.session.rollback()
+                        raise SoapProductNotFound(p.id)
                     new_count = dbp.count - p.count
                     if new_count < 0:
                         db.session.rollback()
@@ -88,6 +94,7 @@ class OrderService(ServiceBase):
                     db.session.add(op) 
                 db.session.commit()
             except SQLAlchemyError as e:
+                db.session.rollback()
                 raise SoapDBError(e)
             status = get_full_status(order.status)
             return OrderItem(id=order.id, status=status)
@@ -122,21 +129,24 @@ class OrderService(ServiceBase):
     def GetOrderList(ctx, limit, offset, not_completed):
         res = []
         with ctx.udc.context:
-            if limit is None:
-                limit = current_app.config['SOAP_LIMIT']
-            if offset is None:   
-                offset = 0
-            query = Order.query
-            if not_completed == True:
-                query = query.filter(Order.date_complete.is_(None))
-            total = query.count()
-            orders = query.limit(limit).offset(offset).all()
-            for order in orders:
-                oi = OrderItem(
-                    id=order.id,
-                    status=get_full_status(order.status)
-                )
-                res.append(oi)
+            try:
+                if limit is None:
+                    limit = current_app.config['SOAP_LIMIT']
+                if offset is None:   
+                    offset = 0
+                query = Order.query
+                if not_completed == True:
+                    query = query.filter(Order.date_complete.is_(None))
+                total = query.count()
+                orders = query.limit(limit).offset(offset).all()
+                for order in orders:
+                    oi = OrderItem(
+                        id=order.id,
+                        status=get_full_status(order.status)
+                    )
+                    res.append(oi)
+            except SQLAlchemyError as e:
+                raise SoapDBError(e)
             return OrderList(
                 list=res,
                 limit=limit,
@@ -147,20 +157,23 @@ class OrderService(ServiceBase):
     @rpc(IdInt, _returns=OrderInfo)
     def GetOrderById(ctx, id):
         with ctx.udc.context:
-            order = Order.query.get(id)
-            if order is None:
-                raise SoapOrderNotFound(id)
-            products = []
-            for p in order.products:
-                dbp = Product.query.get(p.product_id)
-                products.append(ProductInfo(
-                        id=p.product_id,
-                        cost=p.cost,
-                        count=p.count,
-                        name=dbp.name
+            try:
+                order = Order.query.get(id)
+                if order is None:
+                    raise SoapOrderNotFound(id)
+                products = []
+                for p in order.products:
+                    dbp = Product.query.get(p.product_id)
+                    products.append(ProductInfo(
+                            id=p.product_id,
+                            cost=p.cost,
+                            count=p.count,
+                            name=dbp.name
+                        )
                     )
-                )
-            addr = Address.query.get(order.address_id)
+                addr = Address.query.get(order.address_id)
+            except SQLAlchemyError as e:
+                raise SoapDBError(e)
             return OrderInfo(
                 id=order.id,
                 phone=order.phone,
@@ -178,7 +191,58 @@ class OrderService(ServiceBase):
                 products=products
             )
             
-        
+    @rpc(IdInt, IdInt, IdInt, ReasonString, _returns=OrderItem)
+    def ReturnProduct(ctx, id, product_id, count, reason):
+        with ctx.udc.context:
+            try:
+                order = Order.query.get(id)
+                if order is None:
+                    raise SoapOrderNotFound(id)
+                # Получение информации о товаре
+                op = Order_Product.query.filter(
+                        Order_Product.order_id==id,
+                        Order_Product.product_id==product_id
+                    ).first()
+                dbp = Product.query.get(product_id)
+                if op is None or dbp is None:
+                    db.session.rollback()
+                    raise SoapProductNotFound(product_id, id)
+                new_count = op.count - count 
+                if new_count < 0:
+                    db.session.rollback()
+                    raise SoapNotEnoughProducts(
+                        dbp.id,
+                        dbp.name,
+                        count,
+                        op.count
+                    )
+                # Перенос товара в другую таблицу
+                rp = ReturnedProduct(
+                    order_id=order.id,
+                    product_id=op.product_id,
+                    cost=op.cost,
+                    count=count,
+                    date_return=datetime.now(),
+                    reason=reason
+                )
+                db.session.add(rp)
+                # Проверка был ли полностью возращен товар
+                if new_count == 0:
+                    db.session.delete(op)
+                else:
+                    op.count = new_count
+                # Проверка был ли полностью возращен заказ 
+                lst = Order_Product.query.\
+                    filter(Order_Product.order_id==order.id).count()
+                if lst == 0:
+                    order.status = get_reduced_status('Returned')
+                db.session.commit()
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                raise SoapDBError(e)
+            status=get_full_status(order.status)
+            return OrderItem(id=order.id, status=status)
+   
 
 class UserDefinedContext(object):
     def __init__(self, app):
