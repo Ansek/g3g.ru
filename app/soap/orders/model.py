@@ -9,7 +9,7 @@ from spyne import (
     
 from app.database import db
 
-NAMESPACE = 'order'
+NAMESPACE = 'orders'
 
 
 class Product(ComplexModel):

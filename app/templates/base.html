@@ -11,9 +11,6 @@
 	<img src="{{ url_for('static', filename='img/logo.png') }}">
 	<a href="{{ url_for('general.index') }}">Главная страница<a/>
 	<a href="{{ url_for('basket.index') }}">Корзина<a/>
-	<a href="{{ url_for('sections.index') }}">Разделы<a/>
-	<a href="{{ url_for('categories.index') }}">Категории<a/>
-	<a href="{{ url_for('products.index') }}">Товары<a/>
 	<h1>Заголовок</h1>
 	{% block content %}
 	{% endblock %}

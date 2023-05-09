@@ -1,7 +1,7 @@
 from app.database import db
 from dataclasses import dataclass
 
-from app.api_v1 import (
+from app.api.api_v1 import (
     API_V1_ValidationException, 
     check_arg_list,
     check_unumber,
@@ -11,16 +11,16 @@ from app.api_v1 import (
 
 
 @dataclass
-class Section(db.Model):
+class Category(db.Model):
     id: int
     name: str
 
-    __tablename__ = 'section'
+    __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), nullable=False, unique=True)
+    name = db.Column(db.String(64), nullable=False, unique=True)
 
-    categories = db.relationship('Category', backref='section')
+    products = db.relationship('Product', backref='category')
 
     def __str__(self):
         return self.name
@@ -36,4 +36,4 @@ class Section(db.Model):
 
         # Проверки на значения
         check_unumber(id, 'id')
-        check_string(name, 32, 'name')
+        check_string(name, 64, 'name')

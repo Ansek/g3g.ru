@@ -1,36 +1,13 @@
-from flask import (
-    Blueprint,
-    render_template,
-    flash,
-    abort,
-    request,
-    jsonify,
-    current_app
-)
-from sqlalchemy.exc import SQLAlchemyError
+from flask import jsonify
 
 from .model import Product, db
-from app.api_v1 import (
+from app.api.api_v1 import (
     convert_arg,
     log_error,
     API_V1,
     API_V1_ValidationException
 )    
 
-module = Blueprint('products', __name__,
-    template_folder='templates', url_prefix='/products')
-
-
-@module.route('/', methods=['GET'])
-def index():
-    products = None
-    try:
-        products = Product.query.all()
-    except SQLAlchemyError as e:
-        log_error(e, 'in product.all')
-        abort(500)
-    return render_template('products/index.html', products=products)
-    
 
 class Product_API_V1(API_V1):
     def __init__(self):
@@ -39,16 +16,16 @@ class Product_API_V1(API_V1):
             'geCost', 'leCost', 'category'
         ])
         
-        @self.bp.route('/<int:id>/add_count/<int:n>', methods=['PUT'])
+        @self.bp.route('/<int:id>/add_count/<int:n>', methods=['PATCH'])
         def add_count(id, n):
             def query(id, data):
                 data.count += n
                 db.session.commit()
                 res = { 'data': data }
                 return res, 200 
-            return self.query_id(id, query, 'PUT')
+            return self.query_id(id, query, 'PATCH')
 
-        @self.bp.route('/<int:id>/sub_count/<int:n>', methods=['PUT'])
+        @self.bp.route('/<int:id>/sub_count/<int:n>', methods=['PATCH'])
         def sub_count(id, n):
             def query(id, data):
                 data.count -= n
@@ -61,7 +38,7 @@ class Product_API_V1(API_V1):
                 db.session.commit()
                 res = { 'data': data }
                 return res, 200 
-            return self.query_id(id, query, 'PUT')
+            return self.query_id(id, query, 'PATCH')
 
     def get(self, limit, offset):
         query = self.dbclass.query

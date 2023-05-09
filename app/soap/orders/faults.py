@@ -39,6 +39,13 @@ class SoapStatusAssignmentError(Fault):
             faultstring=f'"{s1}" status must follow "{s2}" status'
         )
 
+class SoapStatusAlreadySetError(Fault):
+    def __init__(self, s):
+        Fault.__init__(
+            self,
+            faultcode='StatusAlreadySetError',
+            faultstring=f'"{s}" status already set'
+        )
 
 class SoapNotEnoughProducts(Fault):
     def __init__(self, id, name, count1, count2):
