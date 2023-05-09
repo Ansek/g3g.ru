@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from app.api_v1 import (
     API_V1_ValidationException, 
     check_arg_list,
+    check_unumber,
+    check_string,
     convert_arg
 )
 
@@ -33,8 +35,6 @@ class Product(db.Model):
     def validate_args(IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['name', 'cost', 'count', 'img_path', 'category_id']
-        if IsNotNone:
-            arg_list += ['id']
         check_arg_list(arg_list)
         
         # Проверки на тип
@@ -46,36 +46,9 @@ class Product(db.Model):
         category_id = convert_arg('category_id', int, IsNotNone)
         
         # Проверки на значения
-        if id and id < 0:
-            msg = 'Id must be should be a positive number'
-            raise API_V1_ValidationException(msg)
-        
-        if name:      
-            if len(name.strip()) == 0:
-                msg = 'Name must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(name) > 128:
-                msg = f'Name must exceed 128 characters'
-                raise API_V1_ValidationException(msg)
-            
-        if cost and cost < 0:
-            msg = 'Cost must be should be a positive number'
-            raise API_V1_ValidationException(msg)
-            
-        if count and count < 0:
-            msg = 'Count must be should be a positive number'
-            raise API_V1_ValidationException(msg)
-        
-        if img_path:        
-            if len(img_path.strip()) == 0:
-                msg = 'Image path must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(img_path) > 256:
-                msg = f'Image path must exceed 256 characters'
-                raise API_V1_ValidationException(msg)
-            
-        if category_id and category_id < 0:
-            msg = 'Category id must be should be a positive number'
-            raise API_V1_ValidationException(msg)
+        check_unumber(id, 'id')
+        check_string(name, 128, 'name')
+        check_unumber(cost, 'cost')
+        check_unumber(count, 'count')
+        check_string(img_path, 256, 'img_path')
+        check_unumber(category_id, 'category_id')

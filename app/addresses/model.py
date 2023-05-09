@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from app.api_v1 import (
     API_V1_ValidationException, 
     check_arg_list,
+    check_unumber,
+    check_string,
     convert_arg
 )
 
@@ -28,8 +30,6 @@ class Address(db.Model):
     def validate_args(IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['address', 'city', 'img_path']
-        if IsNotNone:
-            arg_list += ['id']
         check_arg_list(arg_list)
         
         # Проверки на тип
@@ -39,33 +39,7 @@ class Address(db.Model):
         img_path = convert_arg('img_path', str, IsNotNone)
 
         # Проверки на значения
-        if id and id < 0:
-            msg = 'Id must be should be a positive number'
-            raise API_V1_ValidationException(msg)
-        
-        if address:  
-            if len(address.strip()) == 0:
-                msg = 'Address must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(address) > 128:
-                msg = f'Address must exceed 128 characters'
-                raise API_V1_ValidationException(msg)
-
-        if city:  
-            if len(city.strip()) == 0:
-                msg = 'City must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(city) > 64:
-                msg = f'City must exceed 64 characters'
-                raise API_V1_ValidationException(msg)
-                
-        if img_path:  
-            if len(img_path.strip()) == 0:
-                msg = 'img_path must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(img_path) > 256:
-                msg = f'img_path  must exceed 256 characters'
-                raise API_V1_ValidationException(msg)
+        check_unumber(id, 'id')
+        check_string(address, 128, 'address')
+        check_string(city, 64, 'city')
+        check_string(img_path, 256, 'img_path')

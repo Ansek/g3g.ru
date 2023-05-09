@@ -2,10 +2,11 @@ from spyne.error import Fault, ResourceNotFoundError
 
 class SoapDBError(Fault):
     def __init__(self, err):
+        print(str(err))
         Fault.__init__(
             self,
             faultcode='DBError',
-            faultstring=str(err)
+            faultstring='Error while querying the database'
         )
 
 

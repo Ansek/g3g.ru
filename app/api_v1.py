@@ -17,7 +17,7 @@ def convert_arg(arg_name, arg_type, IsNotNone=False):
     res = None
     str_type = arg_type.__name__
     msg = f'{arg_name} should be of type {str_type}'
-    if arg and arg != '':
+    if arg:
         arg = request.args.get(arg_name, type=arg_type)
         if arg is not None:
             res = arg
@@ -26,6 +26,22 @@ def convert_arg(arg_name, arg_type, IsNotNone=False):
     elif IsNotNone:
         raise API_V1_ValidationException(msg)
     return res
+
+
+def check_unumber(n, name):
+    if n and n < 0:
+        msg = f'{name} must be should be a positive number'
+        raise API_V1_ValidationException(msg)
+
+def check_string(s, size, name):
+    if s:  
+        if len(s.strip()) == 0:
+            msg = f'{name} must not be empty'
+            raise API_V1_ValidationException(msg)
+            
+        if len(s) > size:
+            msg = f'{name} must exceed {size} characters'
+            raise API_V1_ValidationException(msg)
 
 
 def check_arg_list(arg_list):
@@ -49,9 +65,8 @@ class API_V1:
         
         @self.bp.route('/', methods=['GET'])
         def get():
-            total = self.count()
             limit = current_app.config['REST_API_LIMIT']
-            res, code = self.get(limit, 0, total)
+            res, code = self.get(limit, 0)
             return jsonify(res), code
             
         @self.bp.route('/<int:id>', methods=['GET'])
@@ -81,7 +96,7 @@ class API_V1:
             abort(500)
         return count
         
-    def _query_id(self, id, query, method):
+    def query_id(self, id, query, method):
         try:
             if id is None:
                 res, code = query()
@@ -90,12 +105,12 @@ class API_V1:
                 if data is None:
                     res = { 'message':
                         f'Resource {self.tname}.id = {id}' +\
-                        f' was not found in the database'}
+                        ' was not found in the database'}
                     code = 404
                 else:
                     res, code = query(id, data)            
         except SQLAlchemyError as e:
-            msg = f'Error while querying the database' +\
+            msg = 'Error while querying the database' +\
                 f'(in {self.tname}.{method})'
             res = { 'message': msg }
             code = 500
@@ -106,7 +121,7 @@ class API_V1:
             code = 400  
         return res, code      
             
-    def get(self, limit, offset, total, query=None):
+    def get(self, limit, offset, query=None):
         code = 200
         try:
             # Проверка на соотвествие аргументам
@@ -121,6 +136,7 @@ class API_V1:
             # Выполнение запроса 
             if query is None:
                 query = self.dbclass.query
+            total = query.count()
             data = query.limit(limit).offset(offset).all()
             # Проверка на отсутствие данных
             if len(data) == 0:
@@ -143,7 +159,7 @@ class API_V1:
         def query(id, data):
             res = { 'data': data }
             return res, 200
-        return self._query_id(id, query, 'GET')
+        return self.query_id(id, query, 'GET')
     
     def post(self):
         def query():
@@ -154,7 +170,7 @@ class API_V1:
             db.session.commit()
             res = { 'data': data }
             return res, 201        
-        return self._query_id(None, query, 'POST')
+        return self.query_id(None, query, 'POST')
 
     def put(self, id):
         def query(id, data):
@@ -174,14 +190,14 @@ class API_V1:
             db.session.commit()
             res = { 'data': data }
             return res, 200 
-        return self._query_id(id, query, 'PUT')
+        return self.query_id(id, query, 'PUT')
 
     def delete(self, id):
         def query(id, data):
             db.session.delete(data)
             db.session.commit()
             return '', 204
-        return self._query_id(id, query, 'DELETE')
+        return self.query_id(id, query, 'DELETE')
 
         
 class API_V1_ValidationException(Exception):

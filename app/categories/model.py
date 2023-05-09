@@ -4,6 +4,8 @@ from dataclasses import dataclass
 from app.api_v1 import (
     API_V1_ValidationException, 
     check_arg_list,
+    check_unumber,
+    check_string,
     convert_arg
 )
 
@@ -28,8 +30,6 @@ class Category(db.Model):
     def validate_args(IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['name', 'section_id']
-        if IsNotNone:
-            arg_list += ['id']
         check_arg_list(arg_list)
         
         # Проверки на тип
@@ -38,19 +38,6 @@ class Category(db.Model):
         section_id = convert_arg('section_id', int, IsNotNone)
 
         # Проверки на значения
-        if id and id < 0:
-            msg = 'Id must be should be a positive number'
-            raise API_V1_ValidationException(msg)
-        
-        if name:  
-            if len(name.strip()) == 0:
-                msg = 'Name must not be empty'
-                raise API_V1_ValidationException(msg)
-                
-            if len(name) > 64:
-                msg = f'Name must exceed 64 characters'
-                raise API_V1_ValidationException(msg)
-            
-        if section_id and section_id < 0:
-            msg = 'Section id must be should be a positive number'
-            raise API_V1_ValidationException(msg)
+        check_unumber(id, 'id')
+        check_string(name, 64, 'name')
+        check_unumber(section_id, 'section_id')
