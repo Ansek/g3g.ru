@@ -35,7 +35,7 @@ class Address(db.Model):
         # Проверки на тип
         id = convert_arg(args, 'id', int)
         address = convert_arg(args, 'address', str, IsNotNone)
-        city = convert_arg(args, 'address', str, IsNotNone)
+        city = convert_arg(args, 'city', str, IsNotNone)
         img_path = convert_arg(args, 'img_path', str, IsNotNone)
 
         # Проверки на значения

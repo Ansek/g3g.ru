@@ -89,10 +89,15 @@ class API_V1:
         def post():
             res, code = self.post()
             return jsonify(res), code
-            
+
         @self.bp.route('/<int:id>', methods=['PUT'])
         def put(id):
             res, code = self.put(id)
+            return jsonify(res), code
+            
+        @self.bp.route('/<int:id>', methods=['PATCH'])
+        def patch(id):
+            res, code = self.patch(id)
             return jsonify(res), code
             
         @self.bp.route('/<int:id>', methods=['DELETE'])
@@ -183,8 +188,19 @@ class API_V1:
             res = { 'data': data }
             return res, 201        
         return self.query_id(None, query, 'POST')
-
+        
     def put(self, id):
+        def query(id, data):
+            args = get_args()
+            self.dbclass.validate_args(args)
+            for key in args:
+                setattr(data, key, args[key])
+            db.session.commit()
+            res = { 'data': data }
+            return res, 200        
+        return self.query_id(id, query, 'PUT')
+        
+    def patch(self, id):
         def query(id, data):
             args = get_args()
             self.dbclass.validate_args(args, False)
@@ -203,7 +219,7 @@ class API_V1:
             db.session.commit()
             res = { 'data': data }
             return res, 200 
-        return self.query_id(id, query, 'PUT')
+        return self.query_id(id, query, 'PATCH')
 
     def delete(self, id):
         def query(id, data):
