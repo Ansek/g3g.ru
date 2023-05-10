@@ -140,13 +140,14 @@ class API_V1:
     def get(self, limit, offset, query=None):
         code = 200
         try:
+            args = request.args
             # Проверка на соотвествие аргументам
-            check_arg_list(request.args, self.gets_param)
+            check_arg_list(args, self.gets_param)
             # Если заданы пользовательские значения
-            arg = convert_arg('limit', int)
+            arg = convert_arg(args, 'limit', int)
             if arg is not None:
                  limit = arg
-            arg = convert_arg('offset', int)
+            arg = convert_arg(args, 'offset', int)
             if arg is not None:
                  offset = arg
             # Выполнение запроса 
