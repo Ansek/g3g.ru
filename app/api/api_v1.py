@@ -8,17 +8,27 @@ from flask import (
     current_app
 )
 from sqlalchemy.exc import SQLAlchemyError
+import json
 
 from app.database import db
 
 
-def convert_arg(arg_name, arg_type, IsNotNone=False):
-    arg = request.args.get(arg_name)
+def get_args():
+    args = None
+    if request.form:
+        args = request.form
+    elif request.json:
+        args = request.json       
+    return args
+
+
+def convert_arg(args, arg_name, arg_type, IsNotNone=False):
+    arg = args.get(arg_name)
     res = None
     str_type = arg_type.__name__
     msg = f'{arg_name} should be of type {str_type}'
     if arg:
-        arg = request.args.get(arg_name, type=arg_type)
+        arg = args.get(arg_name, type=arg_type)
         if arg is not None:
             res = arg
         else:
@@ -33,6 +43,7 @@ def check_unumber(n, name):
         msg = f'{name} must be should be a positive number'
         raise API_V1_ValidationException(msg)
 
+
 def check_string(s, size, name):
     if s:  
         if len(s.strip()) == 0:
@@ -44,8 +55,8 @@ def check_string(s, size, name):
             raise API_V1_ValidationException(msg)
 
 
-def check_arg_list(arg_list):
-    for key in request.args.keys():
+def check_arg_list(args, arg_list):
+    for key in args.keys():
         if key not in arg_list:
             msg = f'The method has no argument named `{key}`'
             raise API_V1_ValidationException(msg)
@@ -75,7 +86,7 @@ class API_V1:
             return jsonify(res), code
             
         @self.bp.route('/', methods=['POST'])
-        def post(): 
+        def post():
             res, code = self.post()
             return jsonify(res), code
             
@@ -125,7 +136,7 @@ class API_V1:
         code = 200
         try:
             # Проверка на соотвествие аргументам
-            check_arg_list(self.gets_param)
+            check_arg_list(request.args, self.gets_param)
             # Если заданы пользовательские значения
             arg = convert_arg('limit', int)
             if arg is not None:
@@ -163,8 +174,9 @@ class API_V1:
     
     def post(self):
         def query():
-            self.dbclass.validate_args()
-            data = self.dbclass(**request.args)
+            args = get_args()
+            self.dbclass.validate_args(args)
+            data = self.dbclass(**args)
             db.session.add(data)
             db.session.flush()
             db.session.commit()
@@ -174,11 +186,12 @@ class API_V1:
 
     def put(self, id):
         def query(id, data):
-            self.dbclass.validate_args(False)
+            args = get_args()
+            self.dbclass.validate_args(args, False)
             is_changed = False
             # Сравнение с приведением к одному типу
-            for key in request.args:
-                val = request.args[key]
+            for key in args:
+                val = args[key]
                 t = type(getattr(data, key))
                 if getattr(data, key) != t(val):
                     setattr(data, key, val)

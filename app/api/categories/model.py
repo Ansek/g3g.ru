@@ -25,14 +25,14 @@ class Category(db.Model):
     def __str__(self):
         return self.name
         
-    def validate_args(IsNotNone=True):
+    def validate_args(args, IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['name']
-        check_arg_list(arg_list)
+        check_arg_list(args, arg_list)
         
         # Проверки на тип
-        id = convert_arg('id', int)
-        name = convert_arg('name', str, IsNotNone)
+        id = convert_arg(args, 'id', int)
+        name = convert_arg(args, 'name', str, IsNotNone)
 
         # Проверки на значения
         check_unumber(id, 'id')

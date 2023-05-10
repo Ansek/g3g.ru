@@ -27,16 +27,16 @@ class Address(db.Model):
     def __str__(self):
         return self.address
         
-    def validate_args(IsNotNone=True):
+    def validate_args(args, IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['address', 'city', 'img_path']
-        check_arg_list(arg_list)
+        check_arg_list(args, arg_list)
         
         # Проверки на тип
-        id = convert_arg('id', int)
-        address = convert_arg('address', str, IsNotNone)
-        city = convert_arg('address', str, IsNotNone)
-        img_path = convert_arg('img_path', str, IsNotNone)
+        id = convert_arg(args, 'id', int)
+        address = convert_arg(args, 'address', str, IsNotNone)
+        city = convert_arg(args, 'address', str, IsNotNone)
+        img_path = convert_arg(args, 'img_path', str, IsNotNone)
 
         # Проверки на значения
         check_unumber(id, 'id')

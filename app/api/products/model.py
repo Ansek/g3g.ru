@@ -32,18 +32,18 @@ class Product(db.Model):
     def __str__(self):
         return self.name
         
-    def validate_args(IsNotNone=True):
+    def validate_args(args, IsNotNone=True):
         # Проверка на соотвествие аргументам
         arg_list = ['name', 'cost', 'count', 'img_path', 'category_id']
-        check_arg_list(arg_list)
+        check_arg_list(args, arg_list)
         
         # Проверки на тип
-        id = convert_arg('id', int)
-        name = convert_arg('name', str, IsNotNone)
-        cost = convert_arg('cost', float, IsNotNone)
-        count = convert_arg('count', int, IsNotNone)
-        img_path = convert_arg('img_path', str, IsNotNone)
-        category_id = convert_arg('category_id', int, IsNotNone)
+        id = convert_arg(args, 'id', int)
+        name = convert_arg(args, 'name', str, IsNotNone)
+        cost = convert_arg(args, 'cost', float, IsNotNone)
+        count = convert_arg(args, 'count', int, IsNotNone)
+        img_path = convert_arg(args, 'img_path', str, IsNotNone)
+        category_id = convert_arg(args, 'category_id', int, IsNotNone)
         
         # Проверки на значения
         check_unumber(id, 'id')
