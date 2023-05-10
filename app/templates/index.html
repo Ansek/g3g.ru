@@ -3,5 +3,51 @@
 {% block meta_title %} Главная страница {% endblock %}
 
 {% block content %}
-    <p>Приветствую!</p>
+    <div class="container-fluid main-carousel">
+		<div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-indicators">
+				{% for i in range(7) %}
+					<button type="button" data-bs-target="#carouselControls" data-bs-slide-to="{{i}}" class="active" aria-current="true" aria-label="Slide {{i+1}}"></button>
+				{% endfor %}
+			</div>
+			<div class="carousel-inner">
+				{% for i in range(1, 7) %}
+				<div class="carousel-item {% if i == 1 %} active {% endif %}">
+					<img src="{{ url_for('static', filename='img/shop/slides/slide' + i|string + '.png') }}" class="d-block w-100" alt="...">
+				</div>
+				{% endfor %}
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselControls" data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselControls" data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Next</span>
+			</button>
+		</div>
+		
+		<section class="main-content content">
+			<div class="container">
+				<div class="row">
+					{% for i in range(25) %}
+					<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+						<div class="product-card">
+							<div class="product-thumb">
+								<a href="#"><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></a>
+							</div>
+							<div class="product-details">
+								<a class="product-title" href="#">ZenFone 2 Laser ZenFone 2 Laser ZenFone 2 Laser</a>
+								<div class="product-bottom-details d-flex justify-content-between">
+									<div class="product-price">10 490 ₽</div>
+									<a class="btn btn-primary" href="#">Купить</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					{% endfor %}
+				<div>
+			</div>
+		</section>
+	</div>
 {% endblock %}

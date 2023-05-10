@@ -1,18 +1,173 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
-    <title>{% block meta_title %}{% endblock %}</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+		rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+		crossorigin="anonymous">
+	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">	
+	<title>{% block meta_title %}{% endblock %}</title>
 </head>
 <body>
-	<img src="{{ url_for('static', filename='img/logo.png') }}">
-	<a href="{{ url_for('general.index') }}">Главная страница<a/>
-	<a href="{{ url_for('basket.index') }}">Корзина<a/>
-	<h1>Заголовок</h1>
+	<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--main-bg-color);">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="{{ url_for('general.index') }}">
+				<img class="logo" src="{{ url_for('static', filename='img/logo.png')}}">
+				<b class="fs-3 align-middle"> Голубь 3G</b></a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse text-light" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0 top-menu">
+				<li class="nav-item disabled">
+					<a class="nav-link" href="#">Тарифы</a>
+				</li>
+				<li class="nav-item	disabled">
+					<a class="nav-link" href="#">Услуги</a>
+				</li>			
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Финансы</a>
+				</li>					
+				<li class="nav-item disabled">
+					<a class="nav-link" href="#">Акции</a>
+				</li>		
+				<li class="nav-item disabled">
+					<a class="nav-link" href="#">Поддержка</a>
+				</li>	
+				<li class="nav-item dropdown">
+					<a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Магазин</a>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<li><a class="dropdown-item" href="#">Action</a></li>
+					<li><a class="dropdown-item" href="#">Another action</a></li>
+					<li><hr class="dropdown-divider"></li>
+					<li><a class="dropdown-item" href="#">Something else here</a></li>
+					</ul>
+				</li>
+				</ul>
+				<b class="ms-auto">Телефон: <span class="text-nowrap">+7 (812) 948-23-06</span></b>
+				<table class="navbar-nav ms-auto">
+					<tr>
+						<td>
+							<a class="nav-link text-center p-0 me-4" href="#">	
+								<img src="{{ url_for('static', filename='img/icons/registration.svg') }}" class="icon contact-icon" alt="Регистрация"/>
+								<span class="align-middle">Регистрация</span></a>
+						</td>
+						<td class="text-center">
+							<a class="nav-link text-center p-0" href="#">	
+								<img src="{{ url_for('static', filename='img/icons/come.svg')}}" class="icon contact-icon" alt="Вход"/>
+								<span class="align-middle">Вход</span></a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="text-center">
+							<a class="nav-link p-0" href="#" data-bs-toggle="modal" data-bs-target="#modal-basker">	
+								<img src="{{ url_for('static', filename='img/icons/basket.svg')}}" class="icon contact-icon" alt="Корзина">
+								<span class="align-middle">Корзина</span></a>
+							<div class="modal fade" id="modal-basker" tabindex="-1" aria-labelledby="basketModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-lg modal-dialog-scrollable">
+									<div class="modal-content">
+										<div class="modal-header">
+											<h5 class="modal-title" id="basketModalLabel">Корзина</h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+											<table class="table">
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></td>
+													<td>ZenFone 2 Laser</td>
+													<td>10 490 ₽</td>
+													<td>1</td>
+												</tr>
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm3-1.png')}}"></td>
+													<td>Xiaomi Redmi Pro</td>
+													<td>16 390 ₽</td>
+													<td>1</td>
+												</tr>
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm4-1.png')}}"></td>
+													<td>Samsung Galaxy A5</td>
+													<td>19 990 ₽</td>
+													<td>1</td>
+												</tr>
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></td>
+													<td>ZenFone 2 Laser</td>
+													<td>10 490 ₽</td>
+													<td>1</td>
+												</tr>
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm3-1.png')}}"></td>
+													<td>Xiaomi Redmi Pro</td>
+													<td>16 390 ₽</td>
+													<td>1</td>
+												</tr>
+												<tr>
+													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm4-1.png')}}"></td>
+													<td>Samsung Galaxy A5</td>
+													<td>19 990 ₽</td>
+													<td>1</td>
+												</tr>
+											</table>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Продолжить покупки</button>
+											<a class="btn btn-primary" href="{{ url_for('basket.index') }}">Перейти в корзину</a>
+										</div>
+									</div>
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</nav>
+
 	{% block content %}
-	{% endblock %}
+	{% endblock %}	
+	
+	<footer class="footer">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3 col-md-6">
+					<h4>Информация</h4>
+					<ul class="list-unstyled">
+						<li><a href="#">О нас</a></li>
+						<li><a href="#">Оплата и доставка</a></li>
+					</ul>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<h4>Контакты</h4>
+					<ul class="list-unstyled">
+						<li>телефон: +7 (812) 948-23-06</a></li>
+						<li>email: g3g@yandex.ru</a></li>
+					</ul>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<h4>Социальные сети</h4>
+					<div class="footer-icons">
+						<a href="#"><img src="{{ url_for('static', filename='img/icons/vk.svg') }}"></a>
+						<a href="#"><img src="{{ url_for('static', filename='img/icons/telegram.svg') }}"></a>
+						<a href="#"><img src="{{ url_for('static', filename='img/icons/youtube.svg') }}"></a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-6">
+					<h4>О сайте</h4>
+					<ul class="list-unstyled">
+						<li>© 2023 ПАО "Голубь 3G"</li>
+						<li>Автор: Секунов А. Н.</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
+	
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
 <body>
 </html>

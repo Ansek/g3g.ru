@@ -1,0 +1,163 @@
+:root {
+  --main-bg-color: #0b79de;
+  --main-text-color: #f0ebf4;
+  --footer-bg-color: #003EF5;
+}
+
+body {
+	position: relative;
+}
+
+img.logo {
+	height: 32pt;
+}
+
+img.icon {
+	height:24px;
+	width:24px;
+	position:relative;
+	top:3px;
+}
+
+img.contact-icon {
+	height:20px;
+}
+
+/* Header */
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--main-text-color);
+	font-weight: 500;
+}
+
+.top-menu li a::after {
+	content: '';
+	display: block;
+	width: 100%;
+	background-color: var(--main-text-color);
+	height: 2px;
+	transition: all .3s;
+	transform: scale(0);
+}
+
+.top-menu li a:hover:after {
+	transform: scale(1);
+}
+
+/* Modal */
+.modal-header {
+	background: var(--main-bg-color);
+}
+
+.modal-body table tr td img {
+    height: 100px;
+    width: 70px;
+}
+
+/* Carousel */
+.main-carousel {
+	padding: 0;
+}
+
+.carousel-item {
+	height: 300px;
+}
+
+.carousel-item img {
+    position: absolute;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    min-height: 300px;
+}
+
+/* Product-card */
+.product-card {
+	box-shadow: 4px 7px 10px 2px rgba(34, 60, 80, 0.2);
+	transition: all .3s;
+	margin-bottom: 10px;
+}
+
+.product-card:hover {
+	box-shadow: 2px 7px 10px 2px rgba(34, 60, 80, 0.5);
+	transition: all .3s;	
+}
+
+.product-thumb a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 200px;
+	padding: 3px;
+}
+
+.product-thumb img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.product-details {
+	padding: 5px;
+}
+
+.product-title {
+	font-weight: 500;
+	display: block;
+	height: 50px;
+	overflow: hidden;
+	text-decoration: none;
+}
+
+.product-bottom-details {
+	border-top: 1px solid gray;
+	padding: 5px
+}
+
+.product-price {
+	font-size: 18px;
+}
+
+/* Сontent */
+
+.content {
+  flex: 1 0 auto;
+}
+
+/* Footer */
+.footer {
+	background-color: var(--footer-bg-color);
+	flex: 0 0 auto;
+}
+
+.footer .container {
+	background-color: var(--footer-bg-color);
+}
+
+.footer h4 {
+	color: var(--main-text-color);
+	text-transform: uppercase;
+	font-size: 18px;
+	border-bottom: 1px solid gray;
+}
+
+.footer a, .footer li {
+	color: var(--main-text-color);
+}
+
+.footer a {
+	display: block;
+	text-decoration: none;
+	transition: all .3s;
+}
+
+.footer a:hover {
+	text-decoration: underline;
+	color: white;
+}
+
+.footer-icons a {
+	display: inline-block;
+}
+
+.footer-icons a img {
+	height: 40px;
+}
