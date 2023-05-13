@@ -1,6 +1,7 @@
 *.pyc
 /env
-/app/static/img/shop/
+/app/general/static/img/slides
+/app/shop/static/img
 
 on_env.bat
 off_env.bat

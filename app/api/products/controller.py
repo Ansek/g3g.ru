@@ -3,7 +3,6 @@ from flask import request, jsonify
 from .model import Product, db
 from app.api.api_v1 import (
     convert_arg,
-    log_error,
     get_args,
     API_V1,
     API_V1_ValidationException

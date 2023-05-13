@@ -8,6 +8,21 @@ body {
 	position: relative;
 }
 
+.navbar {
+	height: 75px;
+}
+
+.content {
+	min-height: calc(100vh - 75px - 100px);
+	flex: 1 0 auto;
+}
+
+.footer {
+	height: 100px;
+	background-color: var(--footer-bg-color);
+	flex: 0 0 auto;
+}
+
 img.logo {
 	height: 32pt;
 }
@@ -21,6 +36,10 @@ img.icon {
 
 img.contact-icon {
 	height:20px;
+}
+
+.error-code-size {
+	font-size: 100pt;
 }
 
 /* Header */
@@ -70,63 +89,7 @@ img.contact-icon {
     min-height: 300px;
 }
 
-/* Product-card */
-.product-card {
-	box-shadow: 4px 7px 10px 2px rgba(34, 60, 80, 0.2);
-	transition: all .3s;
-	margin-bottom: 10px;
-}
-
-.product-card:hover {
-	box-shadow: 2px 7px 10px 2px rgba(34, 60, 80, 0.5);
-	transition: all .3s;	
-}
-
-.product-thumb a {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 200px;
-	padding: 3px;
-}
-
-.product-thumb img {
-	max-width: 100%;
-	max-height: 100%;
-}
-
-.product-details {
-	padding: 5px;
-}
-
-.product-title {
-	font-weight: 500;
-	display: block;
-	height: 50px;
-	overflow: hidden;
-	text-decoration: none;
-}
-
-.product-bottom-details {
-	border-top: 1px solid gray;
-	padding: 5px
-}
-
-.product-price {
-	font-size: 18px;
-}
-
-/* Сontent */
-
-.content {
-  flex: 1 0 auto;
-}
-
 /* Footer */
-.footer {
-	background-color: var(--footer-bg-color);
-	flex: 0 0 auto;
-}
 
 .footer .container {
 	background-color: var(--footer-bg-color);

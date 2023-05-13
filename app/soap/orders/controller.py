@@ -239,7 +239,7 @@ class OrderService(ServiceBase):
                 raise SoapDBError(e)
             status=get_full_status(order.status)
             return OrderItem(id=order.id, status=status)
-   
+
 
 class UserDefinedContext(object):
     def __init__(self, app):
@@ -252,7 +252,7 @@ def create_soap(app):
         [OrderService],
         tns='orders',
         in_protocol=Soap11(validator='lxml'),
-        out_protocol=Soap11(),
+        out_protocol=Soap11()
     )
     
     def _flask_context(ctx):

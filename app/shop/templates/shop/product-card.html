@@ -1,0 +1,12 @@
+<div class="product-card">
+	<div class="product-thumb">
+		<a href="#"><img :src="`{{ url_for('shop.static', filename='') + '${p.img_path}' }}`"></a>
+	</div>
+	<div class="product-details">
+		<a class="product-title" href="#" x-text="p.name"></a>
+		<div class="product-bottom-details d-flex justify-content-between">
+			<div class="product-price" x-text="`${new Intl.NumberFormat('ru').format(p.cost)} ₽`"></div>
+			<a class="btn btn-primary" href="#">Купить</a>
+		</div>
+	</div>
+</div>

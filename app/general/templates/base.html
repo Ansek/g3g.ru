@@ -4,18 +4,21 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+	<link rel="icon" href="{{ url_for('general.static', filename='img/favicon.ico') }}">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
 		rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
 		crossorigin="anonymous">
-	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">	
-	<title>{% block meta_title %}{% endblock %}</title>
+	<link href="{{ url_for('general.static', filename='css/style.css') }}" rel="stylesheet">
+	{% block html_head %}{% endblock %}
+	<script src="{{ url_for('general.static', filename='js/script.js') }}"></script>
+	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	<title>{% block html_title %}{% endblock %}</title>
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--main-bg-color);">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="{{ url_for('general.index') }}">
-				<img class="logo" src="{{ url_for('static', filename='img/logo.png')}}">
+				<img class="logo" src="{{ url_for('general.static', filename='img/logo.png')}}">
 				<b class="fs-3 align-middle"> Голубь 3G</b></a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
@@ -39,11 +42,11 @@
 				</li>	
 				<li class="nav-item dropdown">
 					<a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Магазин</a>
-					<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-					<li><a class="dropdown-item" href="#">Action</a></li>
-					<li><a class="dropdown-item" href="#">Another action</a></li>
-					<li><hr class="dropdown-divider"></li>
-					<li><a class="dropdown-item" href="#">Something else here</a></li>
+					<ul class="dropdown-menu" aria-labelledby="navbarDropdown"
+						 x-data="dataCategories()" x-init="loadCategories()">
+						<template x-for="c in categories">
+							<li><a class="dropdown-item" x-bind:href="'{{ url_for('shop.index', id=0) }}'.replace(0, c.id)" x-text="c.name"></a></li>
+						</template>
 					</ul>
 				</li>
 				</ul>
@@ -52,19 +55,19 @@
 					<tr>
 						<td>
 							<a class="nav-link text-center p-0 me-4" href="#">	
-								<img src="{{ url_for('static', filename='img/icons/registration.svg') }}" class="icon contact-icon" alt="Регистрация"/>
+								<img src="{{ url_for('general.static', filename='img/icons/registration.svg') }}" class="icon contact-icon" alt="Регистрация"/>
 								<span class="align-middle">Регистрация</span></a>
 						</td>
 						<td class="text-center">
 							<a class="nav-link text-center p-0" href="#">	
-								<img src="{{ url_for('static', filename='img/icons/come.svg')}}" class="icon contact-icon" alt="Вход"/>
+								<img src="{{ url_for('general.static', filename='img/icons/come.svg')}}" class="icon contact-icon" alt="Вход"/>
 								<span class="align-middle">Вход</span></a>
 						</td>
 					</tr>
 					<tr>
 						<td colspan="2" class="text-center">
 							<a class="nav-link p-0" href="#" data-bs-toggle="modal" data-bs-target="#modal-basker">	
-								<img src="{{ url_for('static', filename='img/icons/basket.svg')}}" class="icon contact-icon" alt="Корзина">
+								<img src="{{ url_for('general.static', filename='img/icons/basket.svg')}}" class="icon contact-icon" alt="Корзина">
 								<span class="align-middle">Корзина</span></a>
 							<div class="modal fade" id="modal-basker" tabindex="-1" aria-labelledby="basketModalLabel" aria-hidden="true">
 								<div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -76,39 +79,9 @@
 										<div class="modal-body">
 											<table class="table">
 												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></td>
+													<td><img src="{{ url_for('shop.static', filename='img/smartphones/sm2-1.png')}}"></td>
 													<td>ZenFone 2 Laser</td>
 													<td>10 490 ₽</td>
-													<td>1</td>
-												</tr>
-												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm3-1.png')}}"></td>
-													<td>Xiaomi Redmi Pro</td>
-													<td>16 390 ₽</td>
-													<td>1</td>
-												</tr>
-												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm4-1.png')}}"></td>
-													<td>Samsung Galaxy A5</td>
-													<td>19 990 ₽</td>
-													<td>1</td>
-												</tr>
-												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></td>
-													<td>ZenFone 2 Laser</td>
-													<td>10 490 ₽</td>
-													<td>1</td>
-												</tr>
-												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm3-1.png')}}"></td>
-													<td>Xiaomi Redmi Pro</td>
-													<td>16 390 ₽</td>
-													<td>1</td>
-												</tr>
-												<tr>
-													<td><img src="{{ url_for('static', filename='img/shop/smartphones/sm4-1.png')}}"></td>
-													<td>Samsung Galaxy A5</td>
-													<td>19 990 ₽</td>
 													<td>1</td>
 												</tr>
 											</table>
@@ -127,8 +100,10 @@
 		</div>
 	</nav>
 
-	{% block content %}
-	{% endblock %}	
+	<div class="content">
+		{% block content %}
+		{% endblock %}
+	</div>
 	
 	<footer class="footer">
 		<div class="container">
@@ -150,9 +125,9 @@
 				<div class="col-lg-3 col-md-6">
 					<h4>Социальные сети</h4>
 					<div class="footer-icons">
-						<a href="#"><img src="{{ url_for('static', filename='img/icons/vk.svg') }}"></a>
-						<a href="#"><img src="{{ url_for('static', filename='img/icons/telegram.svg') }}"></a>
-						<a href="#"><img src="{{ url_for('static', filename='img/icons/youtube.svg') }}"></a>
+						<a href="#"><img src="{{ url_for('general.static', filename='img/icons/vk.svg') }}"></a>
+						<a href="#"><img src="{{ url_for('general.static', filename='img/icons/telegram.svg') }}"></a>
+						<a href="#"><img src="{{ url_for('general.static', filename='img/icons/youtube.svg') }}"></a>
 					</div>
 				</div>
 				<div class="col-lg-3 col-md-6">

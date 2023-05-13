@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 
-{% block meta_title %} Главная страница {% endblock %}
+{% block html_head %}
+	<link href="{{ url_for('shop.static', filename='css/style.css') }}" rel="stylesheet">
+	<script src="{{ url_for('shop.static', filename='js/script.js') }}"></script>
+{% endblock %}
+
+{% block html_title %} Главная страница {% endblock %}
 
 {% block content %}
     <div class="container-fluid main-carousel">
 		<div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
 			<div class="carousel-indicators">
-				{% for i in range(7) %}
+				{% for i in range(slides | length) %}
 					<button type="button" data-bs-target="#carouselControls" data-bs-slide-to="{{i}}" class="active" aria-current="true" aria-label="Slide {{i+1}}"></button>
 				{% endfor %}
 			</div>
 			<div class="carousel-inner">
-				{% for i in range(1, 7) %}
-				<div class="carousel-item {% if i == 1 %} active {% endif %}">
-					<img src="{{ url_for('static', filename='img/shop/slides/slide' + i|string + '.png') }}" class="d-block w-100" alt="...">
+				{% for s in slides %}
+				<div class="carousel-item {% if loop.index == 1 %} active {% endif %}">
+					<img src="{{ s }}" class="d-block w-100" alt="...">
 				</div>
 				{% endfor %}
 			</div>
@@ -26,26 +31,23 @@
 				<span class="visually-hidden">Next</span>
 			</button>
 		</div>
-		
-		<section class="main-content content">
+
+		<section class="main-content">
 			<div class="container">
-				<div class="row">
-					{% for i in range(25) %}
-					<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
-						<div class="product-card">
-							<div class="product-thumb">
-								<a href="#"><img src="{{ url_for('static', filename='img/shop/smartphones/sm2-1.png')}}"></a>
+				<div class="row" x-data="dataIndexProducts(cn=2, pn=3)" x-init="loadProducts()">
+					<template x-for="c in categories">
+						<div class="col-sm-6">
+							<h3><a x-text="c.name" x-bind:href="'{{ url_for('shop.index', id=0) }}'.replace(0, c.id)"
+									class="text-decoration-none"></a></h3>
+							<div class="row">
+								<template x-for="p in c.products">
+									<div class="col-xl-4 col-lg-6">
+										{% include "shop/product-card.html" %}
+									</div>
+								</template>
 							</div>
-							<div class="product-details">
-								<a class="product-title" href="#">ZenFone 2 Laser ZenFone 2 Laser ZenFone 2 Laser</a>
-								<div class="product-bottom-details d-flex justify-content-between">
-									<div class="product-price">10 490 ₽</div>
-									<a class="btn btn-primary" href="#">Купить</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					{% endfor %}
+						<div>
+					</template>
 				<div>
 			</div>
 		</section>

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block html_head %}
+	<link href="{{ url_for('shop.static', filename='css/style.css') }}" rel="stylesheet">
+	<script src="{{ url_for('shop.static', filename='js/script.js') }}"></script>
+{% endblock %}
+
+{% block html_title %} {{category.name}} {% endblock %}
+
+{% block content %}
+	<div class="row" x-data="dataProducts(c_id={{category.id}}, limit=10)" x-init="loadProducts()"
+			@resize.window="checkPosition()"
+			@scroll.window="checkPosition()">
+		<div class="col-2">
+			<div class="search-form">
+				<h4>Поиск: </h4>
+				<table>
+					<tr>
+						<td class="text-nowrap">Цена от </td>
+						<td><input x-model="cost_from" class="search-input" type="number" min="0"/></td>
+					</tr>
+					<tr>
+						<td class="text-nowrap">Цена до </td>
+						<td><input x-model="cost_to" class="search-input" type="number" min="0"/></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><button class="btn btn-primary float-end" @click="findProducts()">Найти</button></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="col-10">
+			<div class="container">
+				<h1>{{category.name}}</h1>
+				<div class="row">
+					<template x-for="p in products">
+						<div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+							{% include "shop/product-card.html" %}
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

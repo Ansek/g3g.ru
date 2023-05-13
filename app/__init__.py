@@ -25,12 +25,14 @@ def create_app():
     import app.api.categories.controller as categories
     import app.api.products.controller as products
     import app.basket.controller as basket
-    import app.controller as general
+    import app.general.controller as general
+    import app.shop.controller as shop
     import app.soap.orders.controller as orders
 
     app.register_blueprint(basket.module)
     app.register_blueprint(general.module)
-    
+    app.register_blueprint(shop.module)
+        
     api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
     api_v1.register_blueprint(addresses.api_v1.bp)
     api_v1.register_blueprint(categories.api_v1.bp)

@@ -14,12 +14,13 @@ from app.api.api_v1 import (
 class Category(db.Model):
     id: int
     name: str
-
+    productCount: int = -1
+    
     __tablename__ = 'category'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
-
+    
     products = db.relationship('Product', backref='category')
 
     def __str__(self):
