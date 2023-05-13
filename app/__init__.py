@@ -1,5 +1,5 @@
 import os
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, json
 from spyne.server.wsgi import WsgiApplication
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
@@ -43,4 +43,11 @@ def create_app():
         '/soap/orders': WsgiApplication(orders.create_soap(app))
     })
     
+    from app.docs.api_spec import get_apispec
+    from app.docs.swagger import swagger_ui_blueprint, SWAGGER_URL
+    app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+    @app.route('/swagger')
+    def create_swagger_spec():
+        return json.dumps(get_apispec(app).to_dict())
+
     return app

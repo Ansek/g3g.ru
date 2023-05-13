@@ -8,6 +8,7 @@ from flask import (
     current_app
 )
 from sqlalchemy.exc import SQLAlchemyError
+from marshmallow import Schema, fields
 import json
 
 from app.database import db
@@ -65,9 +66,32 @@ def check_arg_list(args, arg_list):
 def log_error(msg, e):
     print(f'\n{msg}\n{e}\n')
 
+class Error400Schema(Schema):
+    message = fields.String(description="Сообщение об ошибке", required=True, example='Id must be should be a positive number')
 
+
+class Error404Schema(Schema):
+    message = fields.String(description="Сообщение об ошибке", required=True, example='Resource table.id = id was not found in the database')
+
+
+class ListError404Schema(Schema):
+    message = fields.String(description="Сообщение об ошибке", required=True, example='Nothing found for this query in table')
+
+
+class Error500Schema(Schema):
+    message = fields.String(description="Сообщение об ошибке", required=True, example='Error while querying the database')
+
+api_docs = {
+    'dictSchema': {
+        'Error400Schema': Error400Schema,
+        'Error404Schema': Error404Schema,
+        'ListError404Schema': ListError404Schema,
+        'Error500Schema': Error500Schema
+    }
+}    
+    
 class API_V1:
-    def __init__(self, name, dbclass):
+    def __init__(self, name, dbclass, api_docs):
         self.bp = Blueprint(name, __name__, url_prefix=name)
         self.dbclass = dbclass
         self.name = name                        # Имя ресурса (мн. числе)
@@ -79,7 +103,7 @@ class API_V1:
             limit = current_app.config['REST_API_LIMIT']
             res, code = self.get(limit, 0)
             return jsonify(res), code
-            
+         
         @self.bp.route('/<int:id>', methods=['GET'])
         def get_id(id):
             res, code = self.get_by_id(id)       
@@ -104,6 +128,112 @@ class API_V1:
         def delete(id):
             res, code = self.delete(id)
             return jsonify(res), code
+            
+        
+        error_404 =  f"""
+        '400':
+          description: {api_docs['errors']['404']}
+          content:
+            application/json:
+              schema: Error404Schema   
+    """
+        error_400_500 = f"""
+        '400':
+          description: {api_docs['errors']['400']}
+          content:
+            application/json:
+              schema: Error400Schema
+        '500':
+          description: {api_docs['errors']['500']}
+          content:
+            application/json:
+              schema: Error500Schema
+      tags:
+        - {api_docs['tags']['name']}   
+    """     
+        get.__doc__ = f"""
+    ---
+    get:
+      summary: {api_docs['get']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['get']}
+      responses:
+        '200':
+          description: {api_docs['get']['200']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}
+        '404':
+          description: {api_docs['get']['404']}
+          content:
+            application/json:
+              schema: ListError404Schema""" + error_400_500
+        get_id.__doc__ = f"""
+    ---
+    get:
+      summary: {api_docs['get_id']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['id']}
+      responses:
+        '200':
+          description: {api_docs['get_id']['200']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+        post.__doc__ = f"""
+    ---
+    post:
+      summary: {api_docs['post']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['id']}
+      responses:
+        '201':
+          description: {api_docs['post']['201']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+        put.__doc__ = f"""
+    ---
+    put:
+      summary: {api_docs['put']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['id']}
+      responses:
+        '200':
+          description: {api_docs['put']['200']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+        patch.__doc__ = f"""
+    ---
+    patch:
+      summary: {api_docs['patch']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['id']}
+      responses:
+        '200':
+          description: {api_docs['patch']['200']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+        delete.__doc__ = f"""
+    ---
+    delete:
+      summary: {api_docs['delete']['summary']}
+      parameters:
+        - in: query
+          schema: {api_docs['schema']['id']}
+      responses:
+        '204':
+          description: {api_docs['delete']['204']}
+          content:
+            application/json:
+              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
 
     def count(self):
         try:
