@@ -14,7 +14,7 @@ from app.api.api_v1 import (
 class Category(db.Model):
     id: int
     name: str
-    productCount: int = -1
+    productCount: int = 0
     
     __tablename__ = 'category'
 

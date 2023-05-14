@@ -3,6 +3,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 from marshmallow import Schema, fields
 
+
 def get_apispec(app):
     spec = APISpec(
         title='REST API для работы с БД салона связи "Голубь 3G"',
@@ -12,9 +13,9 @@ def get_apispec(app):
     )
   
     from app.api.api_v1 import api_docs
-    from app.api.addresses.controller import api_docs as api_docs_a
-    from app.api.categories.controller import api_docs as api_docs_c
-    from app.api.products.controller  import api_docs as api_docs_p
+    from app.api.addresses.specification import api_docs as api_docs_a
+    from app.api.categories.specification import api_docs as api_docs_c
+    from app.api.products.specification import api_docs as api_docs_p
     
     def add_docs(docs):
         for k, v in docs['dictSchema'].items():

@@ -66,16 +66,26 @@ def check_arg_list(args, arg_list):
 def log_error(msg, e):
     print(f'\n{msg}\n{e}\n')
 
+
 class Error400Schema(Schema):
-    message = fields.String(description="Сообщение об ошибке", required=True, example='Id must be should be a positive number')
+    message = fields.String(
+        description="Сообщение об ошибке",
+        required=True,
+        example='Id must be should be a positive number')
 
 
 class Error404Schema(Schema):
-    message = fields.String(description="Сообщение об ошибке", required=True, example='Resource table.id = id was not found in the database')
+    message = fields.String(
+        description="Сообщение об ошибке",
+        required=True,
+        example='Resource table.id = id was not found in the database')
 
 
 class ListError404Schema(Schema):
-    message = fields.String(description="Сообщение об ошибке", required=True, example='Nothing found for this query in table')
+    message = fields.String(
+        description="Сообщение об ошибке",
+        required=True,
+        example='Nothing found for this query in table')
 
 
 class Error500Schema(Schema):
@@ -102,7 +112,9 @@ class API_V1:
         def get():
             limit = current_app.config['REST_API_LIMIT']
             res, code = self.get(limit, 0)
-            return jsonify(res), code
+            response = jsonify(res)
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response, code
          
         @self.bp.route('/<int:id>', methods=['GET'])
         def get_id(id):
@@ -129,20 +141,22 @@ class API_V1:
             res, code = self.delete(id)
             return jsonify(res), code
             
-        
-        error_404 =  f"""
-        '400':
-          description: {api_docs['errors']['404']}
-          content:
-            application/json:
-              schema: Error404Schema   
-    """
-        error_400_500 = f"""
+
+        error_400 = f"""
         '400':
           description: {api_docs['errors']['400']}
           content:
             application/json:
               schema: Error400Schema
+        """
+        error_404 = f"""
+        '404':
+          description: {api_docs['errors']['404']}
+          content:
+            application/json:
+              schema: Error404Schema   
+        """
+        error_500 = f"""     
         '500':
           description: {api_docs['errors']['500']}
           content:
@@ -150,90 +164,97 @@ class API_V1:
               schema: Error500Schema
       tags:
         - {api_docs['tags']['name']}   
-    """     
+        """     
         get.__doc__ = f"""
     ---
     get:
       summary: {api_docs['get']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['get']}
+          schema: {api_docs['get']['inputSchema']}
       responses:
         '200':
           description: {api_docs['get']['200']}
           content:
             application/json:
-              schema: {api_docs['schema']['table']}
+              schema: {api_docs['get']['ouputSchema']}
         '404':
           description: {api_docs['get']['404']}
           content:
             application/json:
-              schema: ListError404Schema""" + error_400_500
+              schema: ListError404Schema""" +\
+              error_400 + error_404 + error_500
         get_id.__doc__ = f"""
     ---
     get:
       summary: {api_docs['get_id']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['id']}
+          schema: {api_docs['get_id']['inputSchema']}
       responses:
         '200':
           description: {api_docs['get_id']['200']}
           content:
             application/json:
-              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+              schema: {api_docs['get_id']['ouputSchema']}""" +\
+              error_400 + error_404 + error_500
         post.__doc__ = f"""
     ---
     post:
       summary: {api_docs['post']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['id']}
+          schema: {api_docs['post']['inputSchema']}
       responses:
         '201':
           description: {api_docs['post']['201']}
           content:
             application/json:
-              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+              schema: {api_docs['post']['ouputSchema']}""" +\
+              error_400 + error_404 + error_500
         put.__doc__ = f"""
     ---
     put:
       summary: {api_docs['put']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['id']}
+          schema: {api_docs['put']['inputSchema']}
       responses:
         '200':
           description: {api_docs['put']['200']}
           content:
             application/json:
-              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+              schema: {api_docs['put']['ouputSchema']}""" +\
+              error_400 + error_404 + error_500
         patch.__doc__ = f"""
     ---
     patch:
       summary: {api_docs['patch']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['id']}
+          schema: {api_docs['patch']['inputSchema']}
       responses:
         '200':
           description: {api_docs['patch']['200']}
           content:
             application/json:
-              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+              schema: {api_docs['patch']['ouputSchema']}""" +\
+              error_400 + error_404 + error_500
         delete.__doc__ = f"""
     ---
     delete:
       summary: {api_docs['delete']['summary']}
       parameters:
         - in: query
-          schema: {api_docs['schema']['id']}
+          schema: {api_docs['delete']['inputSchema']}
       responses:
         '204':
-          description: {api_docs['delete']['204']}
-          content:
-            application/json:
-              schema: {api_docs['schema']['table']}""" + error_404 + error_400_500
+          description: {api_docs['delete']['204']}""" +\
+          error_404 + error_500
+          
+        self.error_400 = error_400
+        self.error_404 = error_404
+        self.error_500 = error_500
 
     def count(self):
         try:

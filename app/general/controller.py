@@ -16,7 +16,6 @@ def index():
         'app', 'general', 'static', 'img', 'slides')
     url = url_for('.static', filename='img/slides/')
     slides = [url + name for name in os.listdir(path)]
-    print(slides)
     return render_template('index.html', slides=slides)
 
 
