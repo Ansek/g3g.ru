@@ -2,7 +2,6 @@ from app.database import db
 from dataclasses import dataclass
 
 from app.api.api_v1 import (
-    API_V1_ValidationException, 
     check_arg_list,
     check_unumber,
     check_string,

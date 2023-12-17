@@ -1,7 +1,6 @@
 from flask import (
     Blueprint,
-    render_template,
-    current_app
+    render_template
 )
 
 module = Blueprint('basket', __name__,

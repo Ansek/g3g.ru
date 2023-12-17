@@ -2,6 +2,7 @@
   --main-bg-color: #0b79de;
   --main-text-color: #f0ebf4;
   --footer-bg-color: #003EF5;
+  --user-btn-color: #105CCB;
 }
 
 body {
@@ -72,6 +73,25 @@ img.contact-icon {
     width: 70px;
 }
 
+.user_button {
+	color: azure;
+	background-color: var(--user-btn-color);
+	padding: 3px 20px;
+	font-weight: bold;
+}
+
+.user_button:hover {
+	color: white;
+	background-color: blue;	
+}
+
+.basket-text {
+	color: azure;
+	position: relative;
+	top: 5px;
+	font-weight: bold;
+}
+
 /* Carousel */
 .main-carousel {
 	padding: 0;
@@ -124,3 +144,6 @@ img.contact-icon {
 .footer-icons a img {
 	height: 40px;
 }
+
+/* Переопределение класса Bootstrap */
+.form-control:focus::placeholder{color:gray !important;}

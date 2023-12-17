@@ -1,11 +1,5 @@
-from flask import request
-
-from .model import Category, db
-from app.api.api_v1 import (
-    convert_arg,
-    API_V1,
-    API_V1_ValidationException
-)    
+from .model import Category
+from app.api.api_v1 import API_V1
 from .specification import api_docs
 
 

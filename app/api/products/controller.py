@@ -27,7 +27,7 @@ class Product_API_V1(API_V1):
         
         @self.bp.route('/<int:id>/add', methods=['PATCH'])
         def add_count(id):            
-            def query(id, data):
+            def query(data):
                 data.count += _get_count()
                 db.session.commit()
                 res = { 'data': data }
@@ -36,7 +36,7 @@ class Product_API_V1(API_V1):
 
         @self.bp.route('/<int:id>/sub', methods=['PATCH'])
         def sub_count(id):
-            def query(id, data):
+            def query(data):
                 data.count -= _get_count()
                 if data.count < 0:
                     msg = 'Сount cannot be a negative number. '+\
@@ -69,7 +69,7 @@ class Product_API_V1(API_V1):
           content:
             application/json:
               schema: Table_ProductSchema""" +\
-              self.error_404 + error_400 + self.error_500
+              error_400 + self.errors([401, 403, 404, 500])
         sub_count.__doc__ = f"""
     ---
     patch:
@@ -83,7 +83,7 @@ class Product_API_V1(API_V1):
           content:
             application/json:
               schema: Table_ProductSchema""" +\
-              self.error_404 + error_400 + self.error_500
+              error_400 + self.errors([401, 403, 404, 500])
 
 
     def get(self, limit, offset):

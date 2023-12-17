@@ -1,0 +1,32 @@
+<form id="registrationForm">
+    <div class="form-floating m-1">
+      <input id="rlogin" name="login" class="form-control" placeholder="user" autocomplete="off"/>
+      <label class="form-label" for="rlogin">Логин*</label>
+    </div>
+
+    <div class="form-floating m-1">
+      <input id="pass1" name="pass1" class="form-control" type="password" placeholder="pass123!"/>
+      <label class="form-label" for="pass1">Пароль*</label>
+    </div>
+  
+    <div class="form-floating m-1">
+        <input id="pass2" name="pass2" class="form-control" type="password" placeholder="pass123!"/>
+        <label class="form-label" for="pass2">Повтор пароля*</label>
+    </div>
+
+    <div class="form-floating m-1">
+        <input id="telephone" name="telephone" class="form-control" type="tel" placeholder="9213332211"/>
+        <label class="form-label" for="telephone">Телефон*</label>
+    </div>
+
+    <div class="form-floating m-1">
+        <input id="email" name="email" class="form-control" type="email" autocomplete="off" placeholder="user@mail.ru"/>
+        <label class="form-label" for="email">Электронная почта</label>
+    </div>
+
+    <small class="m-1">* - поля обязательные для заполнения</small>
+
+    <div class="alert alert-danger mx-3" x-show="formError">
+      <span x-text="formError"></span>
+    </div>
+</form>

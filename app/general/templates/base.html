@@ -10,6 +10,7 @@
 		crossorigin="anonymous">
 	<link href="{{ url_for('general.static', filename='css/style.css') }}" rel="stylesheet">
 	{% block html_head %}{% endblock %}
+	<script src="{{ url_for('general.static', filename='js/forge-sha256.min.js') }}"></script>
 	<script src="{{ url_for('general.static', filename='js/script.js') }}"></script>
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 	<title>{% block html_title %}{% endblock %}</title>
@@ -52,53 +53,103 @@
 				</ul>
 				<b class="ms-auto">Телефон: <span class="text-nowrap">+7 (812) 948-23-06</span></b>
 				<table class="navbar-nav ms-auto">
+					{% if current_user.is_authenticated %}
 					<tr>
 						<td>
-							<a class="nav-link text-center p-0 me-4" href="#">	
-								<img src="{{ url_for('general.static', filename='img/icons/registration.svg') }}" class="icon contact-icon" alt="Регистрация"/>
-								<span class="align-middle">Регистрация</span></a>
+							<a class="btn user_button" href="#">ЛК: {{ current_user.login }}</a>
 						</td>
-						<td class="text-center">
-							<a class="nav-link text-center p-0" href="#">	
-								<img src="{{ url_for('general.static', filename='img/icons/come.svg')}}" class="icon contact-icon" alt="Вход"/>
-								<span class="align-middle">Вход</span></a>
+						<td>
+							<a class="btn user_button" href="#" onclick="logoutUser()">Выход</a>
 						</td>
 					</tr>
+					{% else %}
+					<tr>
+						<td class="text-center">
+							<a class="btn user_button" href="#" 
+								data-bs-toggle="modal" data-bs-target="#modal-login">Вход</a>
+						</td>
+						<td>
+							<a class="btn user_button" href="#"
+								data-bs-toggle="modal" data-bs-target="#modal-registration">Регистрация</a>
+						</td>
+					</tr>
+					{% endif %}
 					<tr>
 						<td colspan="2" class="text-center">
-							<a class="nav-link p-0" href="#" data-bs-toggle="modal" data-bs-target="#modal-basker">	
+							<a class="nav-link p-0" href="#" data-bs-toggle="modal" data-bs-target="#modal-basket">	
 								<img src="{{ url_for('general.static', filename='img/icons/basket.svg')}}" class="icon contact-icon" alt="Корзина">
-								<span class="align-middle">Корзина</span></a>
-							<div class="modal fade" id="modal-basker" tabindex="-1" aria-labelledby="basketModalLabel" aria-hidden="true">
-								<div class="modal-dialog modal-lg modal-dialog-scrollable">
-									<div class="modal-content">
-										<div class="modal-header">
-											<h5 class="modal-title" id="basketModalLabel">Корзина</h5>
-											<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-										</div>
-										<div class="modal-body">
-											<table class="table">
-												<tr>
-													<td><img src="{{ url_for('shop.static', filename='img/smartphones/sm2-1.png')}}"></td>
-													<td>ZenFone 2 Laser</td>
-													<td>10 490 ₽</td>
-													<td>1</td>
-												</tr>
-											</table>
-										</div>
-										<div class="modal-footer">
-											<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Продолжить покупки</button>
-											<a class="btn btn-primary" href="{{ url_for('basket.index') }}">Перейти в корзину</a>
-										</div>
-									</div>
-								</div>
-							</div>
+								<span class="basket-text">Корзина: 0</a>
 						</td>
 					</tr>
 				</table>
 			</div>
 		</div>
 	</nav>
+
+	<div x-data="dataUser()">
+		{% if not current_user.is_authenticated %}
+		<div class="modal fade" id="modal-registration" tabindex="-1" aria-labelledby="registrationModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title text-white" id="registrationModalLabel">Регистрация</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						{% include "registration_form.html" %}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" x-on:click="registerUser">Зарегистрироваться</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Отмена</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+		<div class="modal fade" id="modal-login" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title text-white" id="loginModalLabel">Авторизация</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						{% include "login_form.html" %}
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" x-on:click="loginUser">Войти</button>
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Отмена</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+
+		<div class="modal fade" id="modal-basket" tabindex="-1" aria-labelledby="basketModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="basketModalLabel">Корзина</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<table class="table">
+							<tr>
+								<td><img src="{{ url_for('shop.static', filename='img/smartphones/sm2-1.png')}}"></td>
+								<td>ZenFone 2 Laser</td>
+								<td>10 490 ₽</td>
+								<td>1</td>
+							</tr>
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Продолжить покупки</button>
+						<a class="btn btn-primary" href="{{ url_for('basket.index') }}">Перейти в корзину</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 	<div class="content">
 		{% block content %}

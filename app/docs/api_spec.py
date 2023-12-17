@@ -1,7 +1,6 @@
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
-from marshmallow import Schema, fields
 
 
 def get_apispec(app):
@@ -13,9 +12,11 @@ def get_apispec(app):
     )
   
     from app.api.api_v1 import api_docs
+    from app.api.session.specification import api_docs as api_docs_s
     from app.api.addresses.specification import api_docs as api_docs_a
     from app.api.categories.specification import api_docs as api_docs_c
     from app.api.products.specification import api_docs as api_docs_p
+    from app.api.users.specification import api_docs as api_docs_u
     
     def add_docs(docs):
         for k, v in docs['dictSchema'].items():
@@ -23,10 +24,12 @@ def get_apispec(app):
         if 'tags' in docs.keys():
             spec.tag(docs['tags'])
     
-    add_docs(api_docs) 
+    add_docs(api_docs)
+    add_docs(api_docs_s) 
     add_docs(api_docs_a)
     add_docs(api_docs_c)
-    add_docs(api_docs_p)      
+    add_docs(api_docs_p)
+    add_docs(api_docs_u)    
     
     with app.test_request_context():
         for fn_name in app.view_functions:

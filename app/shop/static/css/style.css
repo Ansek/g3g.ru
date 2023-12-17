@@ -37,11 +37,12 @@
 
 .product-bottom-details {
 	border-top: 1px solid gray;
-	padding: 5px
+	padding: 3px
 }
 
 .product-price {
-	font-size: 18px;
+	font-size: 16px;
+	vertical-align: center;
 }
 
 /* Search */
