@@ -8,7 +8,7 @@ function getListFromAPI(resource, data, func) {
 }
 
 async function sendToAPI(resource, data, method, func) {
-	let url = `http://127.0.0.1:5000/api/v1/${resource}/`
+	let url = `http://127.0.0.1:5000/api/v1/${resource}`
 	try {
 		const response = await fetch(url, {
 			method: method,
@@ -18,9 +18,9 @@ async function sendToAPI(resource, data, method, func) {
 			}
 		});
 		json = ''
-		if (response.status != 204)
+		if (response.status != 204 && response.status != 304)
 			json = await response.json();
-		if (!response.ok)
+		if (!response.ok && response.status != 304)
 			console.log(json)
 		func(response.status, json)
 	} catch (err) {
@@ -115,7 +115,7 @@ function dataUser() {
 				password: forge_sha256(form.pass),
 				remember: document.getElementById('remember').checked
 			};
-			sendToAPI('session/login', data, 'POST', (status, json) => {
+			sendToAPI('session/login/', data, 'POST', (status, json) => {
 				if (status == 204)
 					location.reload()
 				else if (status == 401)
@@ -149,13 +149,13 @@ function dataUser() {
 			};
 			if (form.email)
 				data['email'] = form.email
-			sendToAPI('users', data, 'POST', (status, json) => {
+			sendToAPI('users/', data, 'POST', (status, json) => {
 				if (status == 201) {
 					data2 = {
 						login: json.data.login,
 						password: json.data.password
 					};
-					sendToAPI('session/login', data2, 'POST', (status, json) => {
+					sendToAPI('session/login/', data2, 'POST', (status, json) => {
 						if (status == 204)
 							location.reload()
 						else 
@@ -173,10 +173,47 @@ function dataUser() {
 }
 
 function logoutUser() {
-	sendToAPI('session/logout', null, 'POST', (status, json) => {
+	sendToAPI('session/logout/', null, 'POST', (status, json) => {
 		if (status == 204)
 			location.reload()
 		else
 			alert(`Ошибка на сервере: ${json.message}.`)
 	})
+}
+
+// Модальное окно для увеличения изображения
+class IMGModal {
+	constructor(update_src) {
+		let mdl = document.getElementById('modal-img');
+		this.modal = bootstrap.Modal.getOrCreateInstance(mdl);
+		this.update_src = update_src
+	}
+	show(src) {
+		this.update_src(src)
+		this.modal.show()
+	}
+	hide() {
+		this.update_src('')
+		this.modal.hide();
+	}
+}
+imgModal = null
+function getModalImage() {
+	return {
+		src: '',
+		initModal: function() {
+			imgModal = new IMGModal((src) => {
+				this.src = src
+			})
+		}
+	}
+}
+
+// Формат цены
+price_format = (p) => new Intl.NumberFormat('ru').format(p) + ' ₽'
+
+// Формат телефона
+function formatPhoneNumber(num) {
+	let match = num.match(/^(\d{3})(\d{3})(\d{2})(\d{2})$/);
+	return `+7 (${match[1]}) ${match[2]}-${match[3]}-${match[4]}`;
 }

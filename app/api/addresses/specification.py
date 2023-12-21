@@ -57,13 +57,18 @@ class POST_AddressSchema(Schema):
     address = _address
     city = _city
     img_path = _img_path
-    
- 
-class Table_AddressSchema(Schema):
+
+
+class Data_AddressSchema(Schema):
     id = _id
     address = _address
     city = _city
     img_path = _img_path
+
+
+class Table_AddressSchema(Schema):
+    data = fields.Nested(Data_AddressSchema())
+    total = _total
 
 
 class PATCH_AddressSchema(Schema):
@@ -77,7 +82,7 @@ class PATCH_AddressSchema(Schema):
     
 
 class LIST_AddressSchema(Schema):
-    data = fields.List(fields.Nested(Table_AddressSchema()))
+    data = fields.List(fields.Nested(Data_AddressSchema()))
     limit = _limit
     offset = _offset
     total = _total
@@ -110,7 +115,7 @@ api_docs = {
     'put': {
         'summary': 'Изменяет информацию об адресе целиком',
         '200': 'Выводится информация об адресе с новыми данными',
-        'inputSchema': 'Table_AddressSchema',
+        'inputSchema': 'Data_AddressSchema',
         'ouputSchema': 'Table_AddressSchema'
     },
     'patch': {
@@ -121,7 +126,7 @@ api_docs = {
     },
     'delete': {
         'summary': 'Удаляет информацию об адресе',
-        '204': 'Ничего не возращает',
+        '200': 'Количество оставшихся данных',
         'inputSchema': 'ID_AddressSchema'
     },
     'errors': {
@@ -135,6 +140,7 @@ api_docs = {
         'GET_AddressSchema': GET_AddressSchema,
         'ID_AddressSchema': ID_AddressSchema,
         'POST_AddressSchema': POST_AddressSchema,
+        'Data_AddressSchema': Data_AddressSchema,
         'Table_AddressSchema': Table_AddressSchema,
         'PATCH_AddressSchema': PATCH_AddressSchema,
         'LIST_AddressSchema': LIST_AddressSchema

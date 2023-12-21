@@ -49,11 +49,16 @@ class ID_CategorySchema(Schema):
 
 class POST_CategorySchema(Schema):
     name = _name
-    
- 
-class Table_CategorySchema(Schema):
+
+
+class Data_CategorySchema(Schema):
     id = _id
     name = _name
+
+
+class Table_CategorySchema(Schema):
+    data = fields.Nested(Data_CategorySchema())
+    total = _total
 
 
 class PATCH_CategorySchema(Schema):
@@ -69,7 +74,7 @@ class GET_Table_CategorySchema(Schema):
  
 
 class LIST_CategorySchema(Schema):
-    data = fields.List(fields.Nested(GET_Table_CategorySchema()))
+    data = fields.List(fields.Nested(Data_CategorySchema()))
     limit = _limit
     offset = _offset
     total = _total
@@ -102,7 +107,7 @@ api_docs = {
     'put': {
         'summary': 'Изменяет информацию о категории целиком',
         '200': 'Выводится информация о категории с новыми данными',
-        'inputSchema': 'Table_CategorySchema',
+        'inputSchema': 'Data_CategorySchema',
         'ouputSchema': 'Table_CategorySchema'
     },
     'patch': {
@@ -113,7 +118,7 @@ api_docs = {
     },
     'delete': {
         'summary': 'Удаляет информацию о категории',
-        '204': 'Ничего не возращает',
+        '200': 'Количество оставшихся данных',
         'inputSchema': 'ID_CategorySchema'
     },
     'errors': {
@@ -127,6 +132,7 @@ api_docs = {
         'GET_CategorySchema': GET_CategorySchema,
         'ID_CategorySchema': ID_CategorySchema,
         'POST_CategorySchema': POST_CategorySchema,
+        'Data_CategorySchema': Data_CategorySchema,
         'Table_CategorySchema': Table_CategorySchema,
         'PATCH_CategorySchema': PATCH_CategorySchema,
         'LIST_CategorySchema': LIST_CategorySchema

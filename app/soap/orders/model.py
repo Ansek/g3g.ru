@@ -128,16 +128,16 @@ class Order(db.Model):
     date_receive = db.Column(db.DateTime, nullable=True)
     date_complete = db.Column(db.DateTime, nullable=True)
     
-    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+    address_id = db.Column(db.Integer, db.ForeignKey('address.id', onupdate='RESTRICT', ondelete='RESTRICT'))
     products = db.relationship('Order_Product', backref='order') 
 
 
 class Order_Product(db.Model):
     __tablename__ = 'order_product'
     
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'),
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id', onupdate='RESTRICT', ondelete='RESTRICT'),
         primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'),
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id', onupdate='RESTRICT', ondelete='RESTRICT'),
         primary_key=True)
     cost = db.Column(db.Float(), nullable=False)
     count = db.Column(db.Integer(), nullable=False)
@@ -146,9 +146,9 @@ class Order_Product(db.Model):
 class ReturnedProduct(db.Model):
     __tablename__ = 'returnedproduct'
     
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'),
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id', onupdate='RESTRICT', ondelete='RESTRICT'),
         primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'),
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id', onupdate='RESTRICT', ondelete='RESTRICT'),
         primary_key=True)
     date_return = db.Column(db.DateTime, primary_key=True)
     cost = db.Column(db.Float(), nullable=False)

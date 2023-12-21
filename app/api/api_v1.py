@@ -312,8 +312,8 @@ class API_V1:
         - in: query
           schema: {api_docs['delete']['inputSchema']}
       responses:
-        '204':
-          description: {api_docs['delete']['204']}""" +\
+        '200':
+          description: {api_docs['delete']['200']}""" +\
           errors(del_codes)
           
         self.errors = errors
@@ -357,7 +357,10 @@ class API_V1:
             if query is None:
                 query = self.dbclass.query
             total = query.count()
-            data = query.limit(limit).offset(offset).all()
+            if limit:
+                data = query.limit(limit).offset(offset).all()
+            else:
+                data = query.offset(offset).all()
             # Проверка на отсутствие данных
             if len(data) == 0:
                 res = { 'message':
@@ -391,7 +394,7 @@ class API_V1:
             db.session.add(data)
             db.session.flush()
             db.session.commit()
-            res = { 'data': data }
+            res = { 'data': data, 'total': self.count() }
             return res, 201        
         return try_query_func(query, self.tname, 'POST')
         
@@ -403,7 +406,7 @@ class API_V1:
             for key in args:
                 setattr(data, key, args[key])
             db.session.commit()
-            res = { 'data': data }
+            res = { 'data': data, 'total': self.count() }
             return res, 200        
         return self.query_id(id, query, 'PUT')
         
@@ -425,7 +428,7 @@ class API_V1:
                 return '', 304
             # Иначе фиксируем данные
             db.session.commit()
-            res = { 'data': data }
+            res = { 'data': data, 'total': self.count() }
             return res, 200 
         return self.query_id(id, query, 'PATCH')
 
@@ -434,7 +437,8 @@ class API_V1:
             check_authorization(self.only_admin)
             db.session.delete(data)
             db.session.commit()
-            return '', 204
+            res = { 'total': self.count() }
+            return res, 200
         return self.query_id(id, query, 'DELETE')
 
         

@@ -89,16 +89,21 @@ class POST_ProductSchema(Schema):
     count = _count
     img_path = _img_path
     category_id = _category_id
-    
- 
-class Table_ProductSchema(Schema):
+
+
+class Data_ProductSchema(Schema):
     id = _id
     name = _name
     cost = _cost
     count = _count
     img_path = _img_path
     category_id = _category_id
-    
+
+
+class Table_ProductSchema(Schema):
+    data = fields.Nested(Data_ProductSchema())
+    total = _total
+
 
 class PATCH_ProductSchema(Schema):
     id = _id
@@ -115,7 +120,7 @@ class PATCH_ProductSchema(Schema):
 
 
 class LIST_ProductSchema(Schema):
-    data = fields.List(fields.Nested(Table_ProductSchema()))
+    data = fields.List(fields.Nested(Data_ProductSchema()))
     limit = _limit
     offset = _offset
     total = _total
@@ -159,7 +164,7 @@ api_docs = {
     'put': {
         'summary': 'Изменяет информацию о товаре целиком',
         '200': 'Выводится информация о товаре с новыми данными',
-        'inputSchema': 'Table_ProductSchema',
+        'inputSchema': 'Data_ProductSchema',
         'ouputSchema': 'Table_ProductSchema'
     },
     'patch': {
@@ -170,7 +175,7 @@ api_docs = {
     },
     'delete': {
         'summary': 'Удаляет информацию о товаре',
-        '204': 'Ничего не возращает',
+        '200': 'Количество оставшихся данных',
         'inputSchema': 'ID_ProductSchema'
     },
     'errors': {
@@ -184,6 +189,7 @@ api_docs = {
         'GET_ProductSchema': GET_ProductSchema,
         'ID_ProductSchema': ID_ProductSchema,
         'POST_ProductSchema': POST_ProductSchema,
+        'Data_ProductSchema': Data_ProductSchema,
         'Table_ProductSchema': Table_ProductSchema,
         'PATCH_ProductSchema': PATCH_ProductSchema,
         'LIST_ProductSchema': LIST_ProductSchema,

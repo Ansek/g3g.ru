@@ -92,6 +92,11 @@ img.contact-icon {
 	font-weight: bold;
 }
 
+.img-modal {
+	height: 90vh;
+	object-fit: contain;
+}
+
 /* Carousel */
 .main-carousel {
 	padding: 0;

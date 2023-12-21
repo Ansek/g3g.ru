@@ -27,11 +27,13 @@ def create_app():
     import app.api.categories.controller as categories
     import app.api.products.controller as products
     import app.api.users.controller as users
+    import app.account.controller as account
     import app.basket.controller as basket
     import app.general.controller as general
     import app.shop.controller as shop
     import app.soap.orders.controller as orders
 
+    app.register_blueprint(account.module)
     app.register_blueprint(basket.module)
     app.register_blueprint(general.module)
     app.register_blueprint(shop.module)

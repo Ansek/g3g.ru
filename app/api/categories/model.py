@@ -20,7 +20,7 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False, unique=True)
     
-    products = db.relationship('Product', backref='category')
+    products = db.relationship('Product', backref='category', passive_deletes='all')
 
     def __str__(self):
         return self.name

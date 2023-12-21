@@ -18,6 +18,10 @@ def index():
     slides = [url + name for name in os.listdir(path)]
     return render_template('index.html', slides=slides)
 
+@module.app_errorhandler(401)
+def handle_401(err):
+    return render_template('401.html'), 401
+
 
 @module.app_errorhandler(404)
 def handle_404(err):

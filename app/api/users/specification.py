@@ -71,13 +71,18 @@ class POST_UserSchema(Schema):
     is_admin = _is_admin
 
 
-class Table_UserSchema(Schema):
+class Data_UserSchema(Schema):
     id = _id
     login = _login
     password = _password
     telephone = _telephone
     email = _email
     is_admin = _is_admin
+
+
+class Table_UserSchema(Schema):
+    data = fields.Nested(Data_UserSchema())
+    total = _total
 
 
 class PATCH_UserSchema(Schema):
@@ -95,7 +100,7 @@ class PATCH_UserSchema(Schema):
     
 
 class LIST_UserSchema(Schema):
-    data = fields.List(fields.Nested(Table_UserSchema()))
+    data = fields.List(fields.Nested(Data_UserSchema()))
     limit = _limit
     offset = _offset
     total = _total
@@ -128,7 +133,7 @@ api_docs = {
     'put': {
         'summary': 'Изменяет информацию о пользователе целиком',
         '200': 'Выводится информация о пользователе с новыми данными',
-        'inputSchema': 'Table_UserSchema',
+        'inputSchema': 'Data_UserSchema',
         'ouputSchema': 'Table_UserSchema'
     },
     'patch': {
@@ -139,7 +144,7 @@ api_docs = {
     },
     'delete': {
         'summary': 'Удаляет информацию о пользователе',
-        '204': 'Ничего не возращает',
+        '200': 'Количество оставшихся данных',
         'inputSchema': 'ID_UserSchema'
     },
     'errors': {
@@ -151,6 +156,7 @@ api_docs = {
         'GET_UserSchema': GET_UserSchema,
         'ID_UserSchema': ID_UserSchema,
         'POST_UserSchema': POST_UserSchema,
+        'Data_UserSchema': Data_UserSchema,
         'Table_UserSchema': Table_UserSchema,
         'PATCH_UserSchema': PATCH_UserSchema,
         'LIST_UserSchema': LIST_UserSchema

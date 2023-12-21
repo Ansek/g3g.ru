@@ -56,7 +56,7 @@
 					{% if current_user.is_authenticated %}
 					<tr>
 						<td>
-							<a class="btn user_button" href="#">ЛК: {{ current_user.login }}</a>
+							<a class="btn user_button" href="{{ url_for('account.index') }}">ЛК: {{ current_user.login }}</a>
 						</td>
 						<td>
 							<a class="btn user_button" href="#" onclick="logoutUser()">Выход</a>
@@ -147,6 +147,14 @@
 						<a class="btn btn-primary" href="{{ url_for('basket.index') }}">Перейти в корзину</a>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modal-img" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" x-data="getModalImage()" x-init="initModal">
+				<img :src="src" class="img-modal">
 			</div>
 		</div>
 	</div>

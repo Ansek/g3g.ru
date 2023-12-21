@@ -9,12 +9,12 @@ function dataProducts(c_id, limit) {
 		isLoad: true,
 		cost_to: '',
 		cost_from: '',
+        isPosLoad: true,
 		loadProducts: function() {
 			if (this.isLoad)
 				getListFromAPI('products', this.data, (json) => {
 					if (json.data) {
 						tp = this.products
-						console.log(json.data)
 						json.data.forEach(el => tp.push(el));
 						this.data.offset += this.data.limit;
 						if (this.products.length == json.total)
@@ -42,10 +42,12 @@ function dataProducts(c_id, limit) {
 			const scrolled = window.scrollY
 			const threshold = height - screenHeight / 4
 			const position = scrolled + screenHeight
-			if (position >= threshold) {
+			if (position >= threshold && this.isPosLoad) {
 				this.loadProducts()
+				this.isPosLoad = false
+				setTimeout(() => { this.isPosLoad = true }, 100)
 			}			
-		},
+		}
 	};
 }
 	

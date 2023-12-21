@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block html_head %}
+	<link href="{{ url_for('account.static', filename='css/style.css') }}" rel="stylesheet">
+	<script src="{{ url_for('account.static', filename='js/script.js') }}"></script>
+{% endblock %}
+
+{% block html_title %} Личный кабинет {% endblock %}
+
+{% block content %}
+<div class="p-3 w-100" >
+    <h4 class="m-2"> Личный кабинет: {{ current_user.login }} </h4>
+    <div class="d-flex align-items-start w-100">
+        <div class="nav flex-column nav-pills me-2 sticky-top" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Личные&nbspданные</button>
+            {% if current_user.is_admin %}
+            <button class="nav-link" id="v-pills-site-tab" data-bs-toggle="pill" data-bs-target="#v-pills-site" type="button" role="tab" aria-controls="v-pills-site" aria-selected="false">Данные&nbspсайта</button>
+            {% endif %}
+        </div>
+        <div class="tab-content w-100" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                <div class="d-flex align-items-center justify-content-center"
+                    x-data="getProfile()" x-init="initProfile({{current_user.id}})">
+                    <div class="w-25">
+                        <form id="profileForm">
+                            <div class="form-floating m-1">
+                                <input id="rlogin" name="login" class="form-control" placeholder="user" autocomplete="off"/>
+                                <label class="form-label" for="rlogin">Логин</label>
+                              </div>
+
+                              <div class="form-floating m-1">
+                                <input id="pass" name="pass" class="form-control" type="password" placeholder="pass123!"/>
+                                <label class="form-label" for="pass1">Старый пароль</label>
+                              </div>
+
+                              <div class="form-floating m-1">
+                                <input id="pass1" name="pass1" class="form-control" type="password" placeholder="pass123!"/>
+                                <label class="form-label" for="pass1">Новый пароль</label>
+                              </div>
+                            
+                              <div class="form-floating m-1">
+                                  <input id="pass2" name="pass2" class="form-control" type="password" placeholder="pass123!"/>
+                                  <label class="form-label" for="pass2">Повтор пароля</label>
+                              </div>
+                          
+                              <div class="form-floating m-1">
+                                  <input id="telephone" name="telephone" class="form-control" type="tel" placeholder="9213332211"/>
+                                  <label class="form-label" for="telephone">Телефон</label>
+                              </div>
+                          
+                              <div class="form-floating m-1">
+                                  <input id="email" name="email" class="form-control" type="email" autocomplete="off" placeholder="user@mail.ru"/>
+                                  <label class="form-label" for="email">Электронная почта</label>
+                              </div>
+                          
+                              <div class="alert alert-danger m-1" x-show="formError">
+                                <span x-text="formError"></span>
+                              </div>
+                        </form>
+                        <div class="text-center">
+                            <template x-for="c in commands">
+                                <button type="button" class="btn btn-primary p-1" style="margin: 1px;" x-text="c.label"
+                                    x-on:click="c.action((e) => { formError = e }, profile)"/>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if current_user.is_admin %}
+            <div class="tab-pane fade" id="v-pills-site" role="tabpanel" aria-labelledby="v-pills-site-tab"
+                x-data="getAccountData()" x-init="initData()"  @resize.window="checkPosition()" @scroll.window="checkPosition()">
+                <nav>
+                    <div class="nav nav-tabs">   
+                        <template x-for="(t, i) in tables">
+                            <button class="nav-link" :class="{ 'active': i == 0 }"
+                                x-on:click="changeActiveData(t)"
+                                type="button" x-text="t.title"
+                                data-bs-toggle="tab" role="tab"/>
+                        </template>
+                </nav>
+                {% include "account/table_form.html" %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

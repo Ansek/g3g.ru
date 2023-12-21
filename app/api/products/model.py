@@ -22,11 +22,11 @@ class Product(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), nullable=False, unique=True)
-    cost = db.Column(db.Float, nullable=False)
+    cost = db.Column(db.Integer, nullable=False)
     count = db.Column(db.Integer, nullable=False)
     img_path = db.Column(db.String(256), nullable=False)
 
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id', onupdate='RESTRICT', ondelete='RESTRICT'))
 
     def __str__(self):
         return self.name
@@ -39,7 +39,7 @@ class Product(db.Model):
         # Проверки на тип
         id = convert_arg(args, 'id', int)
         name = convert_arg(args, 'name', str, IsNotNone)
-        cost = convert_arg(args, 'cost', float, IsNotNone)
+        cost = convert_arg(args, 'cost', int, IsNotNone)
         count = convert_arg(args, 'count', int, IsNotNone)
         img_path = convert_arg(args, 'img_path', str, IsNotNone)
         category_id = convert_arg(args, 'category_id', int, IsNotNone)
