@@ -1,0 +1,40 @@
+<template x-if="activeData">
+    <div class="row">
+        <div class="col-9">
+            <table class="table mt-1 text-center">
+                <thead class="table-primary text-center">
+                    <tr class="sticky-top">
+                    <template x-for="col in activeData.columns">
+                        <template x-if="col.label">
+                            <th x-text="col.label">
+                        </template>
+                    </template>
+                </thead>
+                <tbody>
+                    <template x-for="(row, i) in activeData.rows">
+                        <tr x-on:click="selectRow(activeData.data[i], $event.currentTarget)">
+                        <template x-for="cell in row">
+                            <td x-html="cell">
+                        </template>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-3">
+            <form class="sticky-top">
+                <h6 class="m-1" x-text="`Загруженно данных: ${activeData.data.length}/${activeData.total}`"></h6>
+                <template x-for="f in activeData.get_form()">
+                    <div class="form-floating m-1" x-html="f"/>
+                </template>
+                <div class="alert alert-danger m-1" x-show="activeData.error">
+                    <span x-text="activeData.error"></span>
+                </div>
+                <template x-for="c in activeData.commands">
+                    <button type="button" class="btn btn-primary p-1" style="margin: 1px;" x-text="c.label"
+                         x-show="c.condition == activeData.isCurrentNew"
+                         x-on:click="c.action(activeData)"/>
+                </template>
+            </form>
+        </div>
+    </div>
+</template>

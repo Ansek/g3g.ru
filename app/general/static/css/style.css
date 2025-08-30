@@ -1,0 +1,154 @@
+:root {
+  --main-bg-color: #0b79de;
+  --main-text-color: #f0ebf4;
+  --footer-bg-color: #003EF5;
+  --user-btn-color: #105CCB;
+}
+
+body {
+	position: relative;
+}
+
+.navbar {
+	height: 75px;
+}
+
+.content {
+	min-height: calc(100vh - 75px - 100px);
+	flex: 1 0 auto;
+}
+
+.footer {
+	height: 100px;
+	background-color: var(--footer-bg-color);
+	flex: 0 0 auto;
+}
+
+img.logo {
+	height: 32pt;
+}
+
+img.icon {
+	height:24px;
+	width:24px;
+	position:relative;
+	top:3px;
+}
+
+img.contact-icon {
+	height:20px;
+}
+
+.error-code-size {
+	font-size: 100pt;
+}
+
+/* Header */
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--main-text-color);
+	font-weight: 500;
+}
+
+.top-menu li a::after {
+	content: '';
+	display: block;
+	width: 100%;
+	background-color: var(--main-text-color);
+	height: 2px;
+	transition: all .3s;
+	transform: scale(0);
+}
+
+.top-menu li a:hover:after {
+	transform: scale(1);
+}
+
+/* Modal */
+.modal-header {
+	background: var(--main-bg-color);
+}
+
+.modal-body table tr td img {
+    height: 100px;
+    width: 70px;
+}
+
+.user_button {
+	color: azure;
+	background-color: var(--user-btn-color);
+	padding: 3px 20px;
+	font-weight: bold;
+}
+
+.user_button:hover {
+	color: white;
+	background-color: blue;	
+}
+
+.basket-text {
+	color: azure;
+	position: relative;
+	top: 5px;
+	font-weight: bold;
+}
+
+.img-modal {
+	height: 90vh;
+	object-fit: contain;
+}
+
+/* Carousel */
+.main-carousel {
+	padding: 0;
+}
+
+.carousel-item {
+	height: 300px;
+}
+
+.carousel-item img {
+    position: absolute;
+    object-fit: cover;
+    top: 0;
+    left: 0;
+    min-height: 300px;
+}
+
+/* Footer */
+
+.footer .container {
+	background-color: var(--footer-bg-color);
+}
+
+.footer h4 {
+	color: var(--main-text-color);
+	text-transform: uppercase;
+	font-size: 18px;
+	border-bottom: 1px solid gray;
+}
+
+.footer a, .footer li {
+	color: var(--main-text-color);
+}
+
+.footer a {
+	display: block;
+	text-decoration: none;
+	transition: all .3s;
+}
+
+.footer a:hover {
+	text-decoration: underline;
+	color: white;
+}
+
+.footer-icons a {
+	display: inline-block;
+}
+
+.footer-icons a img {
+	height: 40px;
+}
+
+/* Переопределение класса Bootstrap */
+.form-control:focus::placeholder{color:gray !important;}

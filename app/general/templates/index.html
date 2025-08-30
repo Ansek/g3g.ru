@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block html_head %}
+	<link href="{{ url_for('shop.static', filename='css/style.css') }}" rel="stylesheet">
+	<script src="{{ url_for('shop.static', filename='js/script.js') }}"></script>
+{% endblock %}
+
+{% block html_title %} Главная страница {% endblock %}
+
+{% block content %}
+    <div class="container-fluid main-carousel">
+		<div id="carouselControls" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-indicators">
+				{% for i in range(slides | length) %}
+					<button type="button" data-bs-target="#carouselControls" data-bs-slide-to="{{i}}" class="active" aria-current="true" aria-label="Slide {{i+1}}"></button>
+				{% endfor %}
+			</div>
+			<div class="carousel-inner">
+				{% for s in slides %}
+				<div class="carousel-item {% if loop.index == 1 %} active {% endif %}">
+					<img src="{{ s }}" class="d-block w-100" alt="...">
+				</div>
+				{% endfor %}
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselControls" data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselControls" data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Next</span>
+			</button>
+		</div>
+
+		<section class="main-content">
+			<div class="container">
+				<div class="row" x-data="dataIndexProducts(cn=2, pn=3)" x-init="loadProducts()">
+					<template x-for="c in categories">
+						<div class="col-sm-6">
+							<h3><a x-text="c.name" x-bind:href="'{{ url_for('shop.index', id=0) }}'.replace(0, c.id)"
+									class="text-decoration-none"></a></h3>
+							<div class="row">
+								<template x-for="p in c.products">
+									<div class="col-xl-4 col-lg-6">
+										{% include "shop/product-card.html" %}
+									</div>
+								</template>
+							</div>
+						<div>
+					</template>
+				<div>
+			</div>
+		</section>
+	</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+from .model import Category
+from app.api.api_v1 import API_V1
+from .specification import api_docs
+
+
+class Category_API_V1(API_V1):
+    def __init__(self):
+        super().__init__('categories', Category, api_docs)
+        
+    def get(self, limit, offset):      
+        res, code = super().get(limit, offset)
+        for c in res['data']:
+            c.productCount = len(c.products)
+        return res, code
+
+
+api_v1 = Category_API_V1()

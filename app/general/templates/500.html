@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block html_title %} Ошибка сервера {% endblock %}
+
+{% block content %}
+	<div class="d-flex justify-content-center">
+		<div>
+			<h1 class="text-center error-code-size">500</h1>
+			<p class="lead fs-1">При обработке вашего запроса произошла ошибка. Повторите попытку или свяжитесь с администратором.</p>
+		</div>
+	</div>
+{% endblock %}
